@@ -3,14 +3,14 @@ extends RigidBody2D
 signal hit_sth
 
 #一些武器基本属性
-export(int) var level
-export(int) var value
-export(int) var length
+var level = 0
+var value = 0
+var length = 0
 
 var tag : String = "weapon"#player_weapon or enemy_weapon or weapon
 var type : String#melee or ranged or magic
 
-var damage : float = weight*0.2 + level*0.2 + value*0.15
+var damage : float = weight * 0.2 + level * 0.2 + value * 0.15
 var collision_tag = {"obtuse":1,"sharp":3}
 
 var pos1 = self.global_position

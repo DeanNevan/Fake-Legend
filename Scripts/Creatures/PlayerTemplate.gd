@@ -9,6 +9,10 @@ var wave_weapon_vector
 var wave_weapon_speed
 var wave_weapon_direction
 
+var vector_player_to_weapon = Vector2()
+var vector_player_to_mouse = Vector2()
+var vector_weapon_to_mouse = Vector2()
+
 var towards : String
 
 func _ready():
@@ -66,14 +70,20 @@ func control_move():#控制player移动
 
 func judge_towards():
 	if is_ani:
-		if vector_player_to_mouse.x > 0 and ((vector_player_to_mouse.y / vector_player_to_mouse.x) > -1 or (vector_player_to_mouse.y / vector_player_to_mouse.x) < 1):
-			towards = "right"
-		if vector_player_to_mouse.y < 0 and ((vector_player_to_mouse.y / vector_player_to_mouse.x) < -1 or (vector_player_to_mouse.y / vector_player_to_mouse.x) > 1):
-			towards = "up"
-		if vector_player_to_mouse.x < 0 and ((vector_player_to_mouse.y / vector_player_to_mouse.x) > -1 or (vector_player_to_mouse.y / vector_player_to_mouse.x) < 1):
-			towards = "left"
-		if vector_player_to_mouse.y > 0 and ((vector_player_to_mouse.y / vector_player_to_mouse.x) < -1 or (vector_player_to_mouse.y / vector_player_to_mouse.x) > 1):
-			towards = "down"
+		var vec_x = vector_player_to_mouse.x
+		var vec_y = vector_player_to_mouse.y
+		if vec_x == 0:
+			return
+		if (vec_y / vec_x) >= -1 and (vec_y / vec_x) <= 1:
+			if vec_x >= 0:
+				towards = "right"
+			else:
+				towards = "left"
+		else:
+			if vec_y > 0:
+				towards = "down"
+			else:
+				towards = "up"
 
 func turn_to_towards():
 	if is_ani:

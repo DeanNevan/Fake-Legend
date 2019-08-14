@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/black_purple_idle.png-beb2fb9f0cbcb256877a6417e380d862.stex"
+path="res://.import/black_purple_idle.png-1af5d5ecb1271a86865541f8e42fd351.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/Art/Creatures/Update/BlackPurple/black_purple_idle.png"
-dest_files=[ "res://.import/black_purple_idle.png-beb2fb9f0cbcb256877a6417e380d862.stex" ]
+source_file="res://Assets/Art/Creatures/Update/Violet/black_purple_idle.png"
+dest_files=[ "res://.import/black_purple_idle.png-1af5d5ecb1271a86865541f8e42fd351.stex" ]
 
 [params]
 

@@ -24,32 +24,29 @@ collision_mask = 0
 mass = 1.93878
 gravity_scale = 0.0
 script = ExtResource( 1 )
-level = 2
-value = 30
-length = 72
 
 [node name="Sprite" type="Sprite" parent="."]
-position = Vector2( 34.6414, 0 )
+position = Vector2( 21.5153, 0 )
 rotation = 0.785398
 texture = ExtResource( 2 )
 
 [node name="ObtuseArea3" type="CollisionShape2D" parent="."]
-position = Vector2( 29.1414, 0 )
+position = Vector2( 16.0153, 0 )
 rotation = 1.5708
 shape = SubResource( 1 )
 
 [node name="SharpArea1" type="CollisionShape2D" parent="."]
-position = Vector2( 52.1414, 4.5 )
+position = Vector2( 39.0153, 4.5 )
 rotation = 1.5708
 shape = SubResource( 2 )
 
 [node name="SharpArea2" type="CollisionShape2D" parent="."]
-position = Vector2( 64.6414, -0.0629997 )
+position = Vector2( 51.5153, -0.0629997 )
 rotation = 1.5708
 shape = SubResource( 3 )
 
 [node name="ObtuseArea" type="Area2D" parent="."]
-position = Vector2( 34.6414, 0 )
+position = Vector2( 21.5153, 0 )
 collision_layer = 0
 collision_mask = 0
 
@@ -59,7 +56,7 @@ rotation = 1.5708
 shape = SubResource( 1 )
 
 [node name="SharpArea" type="Area2D" parent="."]
-position = Vector2( 34.6414, 0 )
+position = Vector2( 21.5153, 0 )
 collision_layer = 0
 collision_mask = 0
 
@@ -74,7 +71,7 @@ rotation = 1.5708
 shape = SubResource( 3 )
 
 [node name="Margin" type="Path2D" parent="."]
-position = Vector2( 34.6414, 0 )
+position = Vector2( 21.5153, 0 )
 curve = SubResource( 4 )
 [connection signal="body_entered" from="ObtuseArea" to="." method="_on_ObtuseArea_body_entered" binds= [ "obtuse" ]]
 [connection signal="body_entered" from="SharpArea" to="." method="_on_SharpArea_body_entered" binds= [ "sharp" ]]

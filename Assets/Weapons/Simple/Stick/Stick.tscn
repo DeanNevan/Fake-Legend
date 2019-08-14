@@ -24,9 +24,6 @@ mass = 0.816326
 physics_material_override = SubResource( 1 )
 gravity_scale = 0.0
 script = ExtResource( 1 )
-level = 1
-value = 10
-length = 43
 
 [node name="Sprite" type="Sprite" parent="."]
 rotation = 0.785398

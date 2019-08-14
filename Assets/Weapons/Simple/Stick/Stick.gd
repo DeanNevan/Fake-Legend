@@ -1,6 +1,11 @@
 extends "res://Scripts/Weapons/WeaponTemplate.gd"
 
+
+
 func _ready():
+	level = 1
+	value = 12
+	length = 42
 	set_tag_and_type("weapon","melee")
 
 func _on_ObtuseArea_body_entered(body,weapon_hit_type):

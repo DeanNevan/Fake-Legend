@@ -1,10 +1,10 @@
 extends RigidBody2D
 
 #一些属性
-export(int) var max_speed = 200#最高速度
+export(int) var max_speed = 100#最高速度
 export(int) var strength = 20
 export(int) var max_life = 100
-export(int) var max_stamina
+export(int) var max_stamina = 100
 export(PackedScene) var weaponScene
 
 var tag = "creature"
@@ -13,10 +13,6 @@ var weapon_speed
 var stamina
 var life
 var alive = true		# 是否存活
-
-var vector_player_to_weapon = Vector2()
-var vector_player_to_mouse = Vector2()
-var vector_weapon_to_mouse = Vector2()
 
 var velocity = Vector2()
 
