@@ -1,0 +1,72 @@
+[gd_scene load_steps=7 format=2]
+
+[ext_resource path="res://Assets/Weapons/Simple/Sword/Sword.gd" type="Script" id=1]
+[ext_resource path="res://Assets/Art/Weapons/Simple/Sword/Sword.png" type="Texture" id=2]
+
+[sub_resource type="PhysicsMaterial" id=1]
+friction = 0.4
+bounce = 0.1
+
+[sub_resource type="ConvexPolygonShape2D" id=2]
+points = PoolVector2Array( 11, -9, 0, 5, -11, -9 )
+
+[sub_resource type="RectangleShape2D" id=3]
+
+[sub_resource type="Curve2D" id=4]
+bake_interval = 1.0
+_data = {
+"points": PoolVector2Array( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -0.271469, -0.0193977, 0, 0, 0, 0, 13.7109, -11.0177, 0, 0, 0, 0, 13.8814, -3.2592, 0, 0, 0, 0, 39.6293, -3.00343, 0, 0, 0, 0, 39.9703, 2.87938, 0, 0, 0, 0, 13.9666, 2.6236, 0, 0, 0, 0, 13.7961, 10.8936, 0, 0, 0, 0, -0.100952, -0.104654 )
+}
+
+[node name="Sword" type="RigidBody2D"]
+collision_layer = 0
+collision_mask = 0
+mass = 1.22449
+physics_material_override = SubResource( 1 )
+gravity_scale = 0.0
+angular_damp = 0.0
+script = ExtResource( 1 )
+level = 2
+value = 18
+length = 40
+
+[node name="ObtuseArea2" type="CollisionShape2D" parent="."]
+position = Vector2( 5, 0 )
+rotation = 1.5708
+shape = SubResource( 2 )
+
+[node name="SharpArea2" type="CollisionShape2D" parent="."]
+position = Vector2( 27, 0 )
+rotation = 1.5708
+scale = Vector2( 0.3, 1.3 )
+shape = SubResource( 3 )
+
+[node name="Sprite" type="Sprite" parent="."]
+position = Vector2( 20, 0 )
+rotation = 1.5708
+texture = ExtResource( 2 )
+
+[node name="ObtuseArea" type="Area2D" parent="."]
+rotation = 1.5708
+linear_damp = 1.0
+collision_layer = 0
+collision_mask = 0
+
+[node name="ObtuseArea" type="CollisionShape2D" parent="ObtuseArea"]
+position = Vector2( 0, -5 )
+shape = SubResource( 2 )
+
+[node name="SharpArea" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 0
+
+[node name="SharpArea" type="CollisionShape2D" parent="SharpArea"]
+position = Vector2( 27, 0 )
+rotation = 1.5708
+scale = Vector2( 0.3, 1.3 )
+shape = SubResource( 3 )
+
+[node name="Margin" type="Path2D" parent="."]
+curve = SubResource( 4 )
+[connection signal="body_entered" from="ObtuseArea" to="." method="_on_ObtuseArea_body_entered" binds= [ "obtuse" ]]
+[connection signal="body_entered" from="SharpArea" to="." method="_on_SharpArea_body_entered" binds= [ "sharp" ]]

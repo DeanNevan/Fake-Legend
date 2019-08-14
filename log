@@ -1,0 +1,119 @@
+OpenGL ES 3.0 Renderer: GeForce MX150/PCIe/SSE2
+**WARNING**: Case mismatch opening requested file 'whiteCrossBlock.png.import', stored as 'WhiteCrossBlock.png.import' in the filesystem. This file will not open when exported to other case-sensitive platforms.
+   At: drivers/windows/file_access_windows.cpp:104:_open() - Case mismatch opening requested file 'whiteCrossBlock.png.import', stored as 'WhiteCrossBlock.png.import' in the filesystem. This file will not open when exported to other case-sensitive platforms.
+**WARNING**: Case mismatch opening requested file 'whiteCrossBlock.png.import', stored as 'WhiteCrossBlock.png.import' in the filesystem. This file will not open when exported to other case-sensitive platforms.
+   At: drivers/windows/file_access_windows.cpp:104:_open() - Case mismatch opening requested file 'whiteCrossBlock.png.import', stored as 'WhiteCrossBlock.png.import' in the filesystem. This file will not open when exported to other case-sensitive platforms.
+**ERROR**: Condition ' !is_inside_tree() ' is true. returned: get_transform()
+   At: scene/2d/canvas_item.cpp:478:get_global_transform() - Condition ' !is_inside_tree() ' is true. returned: get_transform()
+**ERROR**: Condition ' !is_inside_tree() ' is true. returned: get_transform()
+   At: scene/2d/canvas_item.cpp:478:get_global_transform() - Condition ' !is_inside_tree() ' is true. returned: get_transform()
+**ERROR**: Condition ' !is_inside_tree() ' is true. returned: get_transform()
+   At: scene/2d/canvas_item.cpp:478:get_global_transform() - Condition ' !is_inside_tree() ' is true. returned: get_transform()
+**ERROR**: Condition ' !is_inside_tree() ' is true. returned: get_transform()
+   At: scene/2d/canvas_item.cpp:478:get_global_transform() - Condition ' !is_inside_tree() ' is true. returned: get_transform()
+**ERROR**: Condition ' !is_inside_tree() ' is true. returned: get_transform()
+   At: scene/2d/canvas_item.cpp:478:get_global_transform() - Condition ' !is_inside_tree() ' is true. returned: get_transform()
+**ERROR**: Condition ' !is_inside_tree() ' is true. returned: get_transform()
+   At: scene/2d/canvas_item.cpp:478:get_global_transform() - Condition ' !is_inside_tree() ' is true. returned: get_transform()
+**ERROR**: Condition ' !is_inside_tree() ' is true. returned: get_transform()
+   At: scene/2d/canvas_item.cpp:478:get_global_transform() - Condition ' !is_inside_tree() ' is true. returned: get_transform()
+**ERROR**: Condition ' !is_inside_tree() ' is true. returned: get_transform()
+   At: scene/2d/canvas_item.cpp:478:get_global_transform() - Condition ' !is_inside_tree() ' is true. returned: get_transform()
+**ERROR**: Condition ' !is_inside_tree() ' is true. returned: get_transform()
+   At: scene/2d/canvas_item.cpp:478:get_global_transform() - Condition ' !is_inside_tree() ' is true. returned: get_transform()
+**ERROR**: Condition ' !is_inside_tree() ' is true. returned: get_transform()
+   At: scene/2d/canvas_item.cpp:478:get_global_transform() - Condition ' !is_inside_tree() ' is true. returned: get_transform()
+**ERROR**: Condition ' !is_inside_tree() ' is true. returned: get_transform()
+   At: scene/2d/canvas_item.cpp:478:get_global_transform() - Condition ' !is_inside_tree() ' is true. returned: get_transform()
+**ERROR**: Condition ' !is_inside_tree() ' is true. returned: get_transform()
+   At: scene/2d/canvas_item.cpp:478:get_global_transform() - Condition ' !is_inside_tree() ' is true. returned: get_transform()
+**ERROR**: Condition ' !is_inside_tree() ' is true. returned: get_transform()
+   At: scene/2d/canvas_item.cpp:478:get_global_transform() - Condition ' !is_inside_tree() ' is true. returned: get_transform()
+**ERROR**: Condition ' !is_inside_tree() ' is true. returned: get_transform()
+   At: scene/2d/canvas_item.cpp:478:get_global_transform() - Condition ' !is_inside_tree() ' is true. returned: get_transform()
+**ERROR**: Condition ' !is_inside_tree() ' is true. returned: get_transform()
+   At: scene/2d/canvas_item.cpp:478:get_global_transform() - Condition ' !is_inside_tree() ' is true. returned: get_transform()
+**ERROR**: Condition ' !is_inside_tree() ' is true. returned: get_transform()
+   At: scene/2d/canvas_item.cpp:478:get_global_transform() - Condition ' !is_inside_tree() ' is true. returned: get_transform()
+**ERROR**: Condition ' !is_inside_tree() ' is true. returned: get_transform()
+   At: scene/2d/canvas_item.cpp:478:get_global_transform() - Condition ' !is_inside_tree() ' is true. returned: get_transform()
+**ERROR**: Condition ' !is_inside_tree() ' is true. returned: get_transform()
+   At: scene/2d/canvas_item.cpp:478:get_global_transform() - Condition ' !is_inside_tree() ' is true. returned: get_transform()
+**ERROR**: Condition ' !is_inside_tree() ' is true. returned: get_transform()
+   At: scene/2d/canvas_item.cpp:478:get_global_transform() - Condition ' !is_inside_tree() ' is true. returned: get_transform()
+**ERROR**: Condition ' !is_inside_tree() ' is true. returned: get_transform()
+   At: scene/2d/canvas_item.cpp:478:get_global_transform() - Condition ' !is_inside_tree() ' is true. returned: get_transform()
+self damage2.400001
+**ERROR**: Condition ' !is_inside_tree() ' is true. returned: get_transform()
+   At: scene/2d/canvas_item.cpp:478:get_global_transform() - Condition ' !is_inside_tree() ' is true. returned: get_transform()
+**ERROR**: Condition ' !is_inside_tree() ' is true. returned: get_transform()
+   At: scene/2d/canvas_item.cpp:478:get_global_transform() - Condition ' !is_inside_tree() ' is true. returned: get_transform()
+**ERROR**: Condition ' !is_inside_tree() ' is true. returned: get_transform()
+   At: scene/2d/canvas_item.cpp:478:get_global_transform() - Condition ' !is_inside_tree() ' is true. returned: get_transform()
+**ERROR**: Condition ' !is_inside_tree() ' is true. returned: get_transform()
+   At: scene/2d/canvas_item.cpp:478:get_global_transform() - Condition ' !is_inside_tree() ' is true. returned: get_transform()
+self damage3.800009
+**ERROR**: Condition ' !is_inside_tree() ' is true. returned: get_transform()
+   At: scene/2d/canvas_item.cpp:478:get_global_transform() - Condition ' !is_inside_tree() ' is true. returned: get_transform()
+**ERROR**: Condition ' !is_inside_tree() ' is true. returned: get_transform()
+   At: scene/2d/canvas_item.cpp:478:get_global_transform() - Condition ' !is_inside_tree() ' is true. returned: get_transform()
+**ERROR**: Condition ' !is_inside_tree() ' is true. returned: get_transform()
+   At: scene/2d/canvas_item.cpp:478:get_global_transform() - Condition ' !is_inside_tree() ' is true. returned: get_transform()
+**ERROR**: Condition ' !is_inside_tree() ' is true. returned: get_transform()
+   At: scene/2d/canvas_item.cpp:478:get_global_transform() - Condition ' !is_inside_tree() ' is true. returned: get_transform()
+self damage3.800009
+**ERROR**: Condition ' !is_inside_tree() ' is true. returned: get_transform()
+   At: scene/2d/canvas_item.cpp:478:get_global_transform() - Condition ' !is_inside_tree() ' is true. returned: get_transform()
+**ERROR**: Condition ' !is_inside_tree() ' is true. returned: get_transform()
+   At: scene/2d/canvas_item.cpp:478:get_global_transform() - Condition ' !is_inside_tree() ' is true. returned: get_transform()
+**ERROR**: Condition ' !is_inside_tree() ' is true. returned: get_transform()
+   At: scene/2d/canvas_item.cpp:478:get_global_transform() - Condition ' !is_inside_tree() ' is true. returned: get_transform()
+**ERROR**: Condition ' !is_inside_tree() ' is true. returned: get_transform()
+   At: scene/2d/canvas_item.cpp:478:get_global_transform() - Condition ' !is_inside_tree() ' is true. returned: get_transform()
+self damage3.800009
+**ERROR**: Condition ' !is_inside_tree() ' is true. returned: get_transform()
+   At: scene/2d/canvas_item.cpp:478:get_global_transform() - Condition ' !is_inside_tree() ' is true. returned: get_transform()
+**ERROR**: Condition ' !is_inside_tree() ' is true. returned: get_transform()
+   At: scene/2d/canvas_item.cpp:478:get_global_transform() - Condition ' !is_inside_tree() ' is true. returned: get_transform()
+**ERROR**: Condition ' !is_inside_tree() ' is true. returned: get_transform()
+   At: scene/2d/canvas_item.cpp:478:get_global_transform() - Condition ' !is_inside_tree() ' is true. returned: get_transform()
+**ERROR**: Condition ' !is_inside_tree() ' is true. returned: get_transform()
+   At: scene/2d/canvas_item.cpp:478:get_global_transform() - Condition ' !is_inside_tree() ' is true. returned: get_transform()
+self damage3.800009
+**ERROR**: Condition ' !is_inside_tree() ' is true. returned: get_transform()
+   At: scene/2d/canvas_item.cpp:478:get_global_transform() - Condition ' !is_inside_tree() ' is true. returned: get_transform()
+**ERROR**: Condition ' !is_inside_tree() ' is true. returned: get_transform()
+   At: scene/2d/canvas_item.cpp:478:get_global_transform() - Condition ' !is_inside_tree() ' is true. returned: get_transform()
+**ERROR**: Condition ' !is_inside_tree() ' is true. returned: get_transform()
+   At: scene/2d/canvas_item.cpp:478:get_global_transform() - Condition ' !is_inside_tree() ' is true. returned: get_transform()
+**ERROR**: Condition ' !is_inside_tree() ' is true. returned: get_transform()
+   At: scene/2d/canvas_item.cpp:478:get_global_transform() - Condition ' !is_inside_tree() ' is true. returned: get_transform()
+self damage3.800009
+**ERROR**: Condition ' !is_inside_tree() ' is true. returned: get_transform()
+   At: scene/2d/canvas_item.cpp:478:get_global_transform() - Condition ' !is_inside_tree() ' is true. returned: get_transform()
+**ERROR**: Condition ' !is_inside_tree() ' is true. returned: get_transform()
+   At: scene/2d/canvas_item.cpp:478:get_global_transform() - Condition ' !is_inside_tree() ' is true. returned: get_transform()
+**ERROR**: Condition ' !is_inside_tree() ' is true. returned: get_transform()
+   At: scene/2d/canvas_item.cpp:478:get_global_transform() - Condition ' !is_inside_tree() ' is true. returned: get_transform()
+**ERROR**: Condition ' !is_inside_tree() ' is true. returned: get_transform()
+   At: scene/2d/canvas_item.cpp:478:get_global_transform() - Condition ' !is_inside_tree() ' is true. returned: get_transform()
+self damage3.800009
+**ERROR**: Condition ' !is_inside_tree() ' is true. returned: get_transform()
+   At: scene/2d/canvas_item.cpp:478:get_global_transform() - Condition ' !is_inside_tree() ' is true. returned: get_transform()
+**ERROR**: Condition ' !is_inside_tree() ' is true. returned: get_transform()
+   At: scene/2d/canvas_item.cpp:478:get_global_transform() - Condition ' !is_inside_tree() ' is true. returned: get_transform()
+**ERROR**: Condition ' !is_inside_tree() ' is true. returned: get_transform()
+   At: scene/2d/canvas_item.cpp:478:get_global_transform() - Condition ' !is_inside_tree() ' is true. returned: get_transform()
+**ERROR**: Condition ' !is_inside_tree() ' is true. returned: get_transform()
+   At: scene/2d/canvas_item.cpp:478:get_global_transform() - Condition ' !is_inside_tree() ' is true. returned: get_transform()
+self damage3.800009
+it`s tag isTileMap
+it`s tag isTileMap
+it`s tag isTileMap
+it`s tag isTileMap
+it`s tag isTileMap
+it`s tag isTileMap
+it`s tag isTileMap
+it`s tag isTileMap
+it`s tag isTileMap
+it`s tag isTileMap
