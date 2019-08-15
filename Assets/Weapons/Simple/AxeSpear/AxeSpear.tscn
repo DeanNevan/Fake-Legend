@@ -21,7 +21,7 @@ _data = {
 [node name="AxeSpear" type="RigidBody2D"]
 collision_layer = 0
 collision_mask = 0
-mass = 1.93878
+mass = 1.53061
 gravity_scale = 0.0
 script = ExtResource( 1 )
 

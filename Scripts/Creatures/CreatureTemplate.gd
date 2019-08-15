@@ -10,10 +10,11 @@ export(PackedScene) var weaponScene
 var tag = "creature"
 var weapon
 var weapon_speed
-var stamina
-var life
-var total_weight
-var alive = true		# 是否存活
+var stamina#精力
+var life#生命
+var arm_length#臂展
+var total_weight#总重
+var alive = true# 是否存活
 
 #用于AnimatedSprite相关
 var is_ani := false
@@ -45,25 +46,7 @@ onready var margin = $Margin
 onready var raycast#用来检测是否为有效攻击（有时武器会穿墙）
 
 func _ready():
-	raycast = RayCast2D.new()
-	add_child(raycast)
-	
-	#冲刺&闪避方法相关
-	DodgeCooldownTimer = Timer.new()
-	add_child(DodgeCooldownTimer)
-	DodgeCooldownTimer.one_shot = true
-	DodgeCooldownTimer.wait_time = 1.5
-	#print(DodgeCooldownTimer.wait_time)
-	DodgeCooldownTimer.connect("timeout", self, "_on_DodgeCooldownTimer_timeout")
-	
-	#无敌状态相关
-	invincible_time = 15.0 / strength
-	#print("hhh",invincible_time)
-	InvincibleTimer = Timer.new()
-	self.add_child(InvincibleTimer)
-	InvincibleTimer.one_shot = true
-	InvincibleTimer.wait_time = invincible_time
-	InvincibleTimer.connect("timeout", self, "_on_InvincibleTimer_timeout")
+	creature_init()
 
 func _physics_process(delta):
 	pos2 = self.global_position
@@ -147,8 +130,6 @@ func dodge():#冲刺
 		can_dodge = false
 		DodgeCooldownTimer.start()
 
-
-
 func i_am_enemy():
 	self.set_collision_layer_bit(1, true)
 	self.set_collision_mask_bit(0, true)
@@ -163,3 +144,25 @@ func i_am_player():
 	self.set_collision_mask_bit(4, true)
 	self.set_collision_mask_bit(5, true)
 	self.set_collision_mask_bit(6, true)
+
+func creature_init():
+	#用来检测是否为有效攻击（因为有时武器会穿墙）#
+	raycast = RayCast2D.new()
+	add_child(raycast)
+	#判断self是否是AnimatedSprite
+	if self.has_node("AnimatedSprite"):
+		is_ani = true
+		ani = $AnimatedSprite
+	#冲刺&闪避方法相关#
+	DodgeCooldownTimer = Timer.new()
+	add_child(DodgeCooldownTimer)
+	DodgeCooldownTimer.one_shot = true
+	DodgeCooldownTimer.wait_time = 1.5
+	DodgeCooldownTimer.connect("timeout", self, "_on_DodgeCooldownTimer_timeout")
+	#无敌状态相关#
+	invincible_time = 15.0 / strength
+	InvincibleTimer = Timer.new()
+	self.add_child(InvincibleTimer)
+	InvincibleTimer.one_shot = true
+	InvincibleTimer.wait_time = invincible_time
+	InvincibleTimer.connect("timeout", self, "_on_InvincibleTimer_timeout")

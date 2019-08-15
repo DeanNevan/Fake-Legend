@@ -6,27 +6,14 @@ var vector_player_to_weapon = Vector2()
 var vector_player_to_mouse = Vector2()
 var vector_weapon_to_mouse = Vector2()
 
-var is_controlling := false
+var is_controlling := true
+var is_control_pressed := false
 
 func _ready():
-	position = Vector2(70,310)
-	i_am_player()
-	if self.has_node("AnimatedSprite"):
-		is_ani = true
-		ani = $AnimatedSprite
-	self.linear_damp = 0
-	
-	weapon = weaponScene.instance()
-	self.add_child(weapon)
+	player_init()
+	player_weapon_init()
 	total_weight = self.weight + weapon.weight#人物与武器总重
 	#print("total weight is", total_weight)
-	weapon.tag = "player_weapon"
-	weapon.i_am_player_weapon()
-	weapon.linear_damp = clamp(self.strength - weapon.weight + 2, 12, 18)
-	weapon.angular_damp = clamp(self.strength  - weapon.weight - 1, 3, 10)
-	
-	tag = "player"
-	life = max_life
 
 func _physics_process(delta):
 	if Input.is_action_just_pressed("control_mouse_right_click"):
@@ -45,7 +32,7 @@ func _physics_process(delta):
 	vector_player_to_weapon = weapon.get_global_position() - self.get_global_position()
 	
 	if weapon.is_controllable == true:
-		rotate_weapon((self.strength - weapon.weight) * 1.3,delta)
+		rotate_weapon((self.strength - weapon.weight) * 0.7,delta)
 	if weapon.type == "melee":
 		wave_weapon()
 
@@ -69,17 +56,17 @@ func smooth_control_move(max_speed, total_weight):#平滑 控制人物移动
 		var velocity_damp_length = 0
 		if Input.is_action_pressed("control_right"):
 			velocity.x += clamp(strength - total_weight / 2, 3, 15)
-			is_controlling = true
+			is_control_pressed = true
 		if Input.is_action_pressed("control_left"):
 			velocity.x -= clamp(strength - total_weight / 2, 3, 15)
-			is_controlling = true
+			is_control_pressed = true
 		if Input.is_action_pressed("control_down"):
 			velocity.y += clamp(strength - total_weight / 2, 3, 15)
-			is_controlling = true
+			is_control_pressed = true
 		if Input.is_action_pressed("control_up"):
 			velocity.y -= clamp(strength - total_weight / 2, 3, 15)
-			is_controlling = true
-		if !is_controlling:#未按下control按键时 减速
+			is_control_pressed = true
+		if !is_control_pressed:#未按下control按键时 减速
 			velocity_damp_direction = (Vector2() - velocity).normalized()
 			velocity_damp_length = clamp(strength - total_weight / 2, 3, 15)
 			velocity += velocity_damp_direction * velocity_damp_length
@@ -90,9 +77,9 @@ func smooth_control_move(max_speed, total_weight):#平滑 控制人物移动
 		else:
 			velocity = velocity.normalized() * velocity.length()
 		self.linear_velocity = velocity
-		is_controlling = false
+		is_control_pressed = false
 
-func judge_towards():
+func judge_towards():#判断人物朝向
 	if is_ani:
 		var vec_x = vector_player_to_mouse.x
 		var vec_y = vector_player_to_mouse.y
@@ -109,7 +96,7 @@ func judge_towards():
 			else:
 				towards = "up"
 
-func turn_to_towards():
+func turn_to_towards():#转向朝向
 	if is_ani:
 		if towards == "right":
 			ani.flip_h = false
@@ -126,14 +113,14 @@ func get_wave_weapon_vector(weapon_length):
 	if Input.is_action_pressed("control_mouse_left_click"):
 		var target_postion = Vector2()
 		#print("weapon length",weapon_length)
-		if vector_player_to_mouse.length() <= weapon_length:
+		if vector_player_to_mouse.length() <= weapon_length + arm_length:
 			target_postion = get_global_mouse_position()
 		else:
 			target_postion = self.get_global_position() + ((vector_player_to_mouse).normalized() * weapon_length)
 		#print("target position is",target_postion)
 		var wave_weapon_vector = target_postion - weapon.get_global_position()
 		#print("towards",wave_weapon_towards)
-		if (target_postion - weapon.get_global_position()).length() <= weapon_length / 2.0:
+		if (target_postion - weapon.get_global_position()).length() <= (weapon_length + arm_length) / 2.0:
 			return Vector2()
 		else:
 			return wave_weapon_vector
@@ -168,5 +155,18 @@ func wave_weapon():
 	wave_weapon_speed = get_wave_weapon_speed(self.strength,weapon.weight,wave_weapon_vector,weapon.length)
 	wave_weapon_direction = wave_weapon_vector.normalized()
 	weapon.linear_velocity += wave_weapon_direction * wave_weapon_speed * 0.8 * weapon_speed_bonus
-	
 
+func player_init():
+	position = Vector2(70,310)
+	i_am_player()
+	tag = "player"
+	life = max_life
+	arm_length = 3
+
+func player_weapon_init():
+	weapon = weaponScene.instance()
+	self.add_child(weapon)
+	weapon.tag = "player_weapon"
+	weapon.i_am_player_weapon()
+	weapon.linear_damp = clamp(self.strength - weapon.weight + 2, 12, 18)
+	weapon.angular_damp = clamp(self.strength  - weapon.weight - 1, 3, 10)

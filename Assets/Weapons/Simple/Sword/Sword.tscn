@@ -21,7 +21,7 @@ _data = {
 [node name="Sword" type="RigidBody2D"]
 collision_layer = 0
 collision_mask = 0
-mass = 1.22449
+mass = 1.02041
 physics_material_override = SubResource( 1 )
 gravity_scale = 0.0
 angular_damp = 0.0
