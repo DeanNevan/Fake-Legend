@@ -26,6 +26,7 @@ points = PoolVector2Array( 0, 0, 16, 0, 16, 16, 0, 16 )
 0/z_index = 0
 
 [node name="TestRoom1" type="Node2D"]
+z_index = -1
 
 [node name="Background" type="Sprite" parent="."]
 position = Vector2( 250, 250 )

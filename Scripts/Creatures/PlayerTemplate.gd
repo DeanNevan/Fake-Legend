@@ -6,6 +6,8 @@ var vector_player_to_weapon = Vector2()
 var vector_player_to_mouse = Vector2()
 var vector_weapon_to_mouse = Vector2()
 
+var control_direction := Vector2()#键盘按键wasd所指方向
+
 var is_controlling := true
 var is_control_pressed := false
 
@@ -16,6 +18,8 @@ func _ready():
 	#print("total weight is", total_weight)
 
 func _physics_process(delta):
+	judge_control_direcition()#判断wasd所控制的方向
+
 	if Input.is_action_just_pressed("control_mouse_right_click"):
 		self.strength = self.strength + 1
 		print("plus strength!",strength)
@@ -25,7 +29,7 @@ func _physics_process(delta):
 	if self.can_control_self: 
 		smooth_control_move(max_speed, total_weight)
 	if Input.is_key_pressed(KEY_SHIFT):
-		.dodge()
+		dodge(control_direction.normalized())
 	
 	vector_player_to_mouse = get_global_mouse_position() - self.get_global_position()
 	vector_weapon_to_mouse = get_global_mouse_position() - weapon.get_global_position()
@@ -37,47 +41,64 @@ func _physics_process(delta):
 		wave_weapon()
 
 func basic_control_move(speed):#基础 控制人物移动
-	if tag == "player":
-		velocity = Vector2()
-		if Input.is_action_pressed("control_right"):
-			velocity.x += 1
-		if Input.is_action_pressed("control_left"):
-			velocity.x -= 1
-		if Input.is_action_pressed("control_down"):
-			velocity.y += 1
-		if Input.is_action_pressed("control_up"):
-			velocity.y -= 1
-		velocity = velocity.normalized() * speed
-		self.linear_velocity = velocity
+	velocity = Vector2()
+	if Input.is_action_pressed("control_right"):
+		velocity.x += 1
+		is_control_pressed = true
+	if Input.is_action_pressed("control_left"):
+		velocity.x -= 1
+		is_control_pressed = true
+	if Input.is_action_pressed("control_down"):
+		velocity.y += 1
+		is_control_pressed = true
+	if Input.is_action_pressed("control_up"):
+		velocity.y -= 1
+		is_control_pressed = true
+	velocity = velocity.normalized() * speed
+	self.linear_velocity = velocity
+	is_control_pressed = false
 
 func smooth_control_move(max_speed, total_weight):#平滑 控制人物移动
-	if tag == "player":
-		var velocity_damp_direction = Vector2()
-		var velocity_damp_length = 0
-		if Input.is_action_pressed("control_right"):
-			velocity.x += clamp(strength - total_weight / 2, 3, 15)
-			is_control_pressed = true
-		if Input.is_action_pressed("control_left"):
-			velocity.x -= clamp(strength - total_weight / 2, 3, 15)
-			is_control_pressed = true
-		if Input.is_action_pressed("control_down"):
-			velocity.y += clamp(strength - total_weight / 2, 3, 15)
-			is_control_pressed = true
-		if Input.is_action_pressed("control_up"):
-			velocity.y -= clamp(strength - total_weight / 2, 3, 15)
-			is_control_pressed = true
-		if !is_control_pressed:#未按下control按键时 减速
-			velocity_damp_direction = (Vector2() - velocity).normalized()
-			velocity_damp_length = clamp(strength - total_weight / 2, 3, 15)
-			velocity += velocity_damp_direction * velocity_damp_length
-			if velocity.length() <= 15:
-				velocity = Vector2()
-		if velocity.length() > max_speed:
-			velocity = velocity.normalized() * max_speed
-		else:
-			velocity = velocity.normalized() * velocity.length()
-		self.linear_velocity = velocity
-		is_control_pressed = false
+	var velocity_damp_direction = Vector2()
+	var velocity_damp_length = 0
+	if Input.is_action_pressed("control_right"):
+		velocity.x += clamp(strength - total_weight / 2, 3, 15)
+		is_control_pressed = true
+	if Input.is_action_pressed("control_left"):
+		velocity.x -= clamp(strength - total_weight / 2, 3, 15)
+		is_control_pressed = true
+	if Input.is_action_pressed("control_down"):
+		velocity.y += clamp(strength - total_weight / 2, 3, 15)
+		is_control_pressed = true
+	if Input.is_action_pressed("control_up"):
+		velocity.y -= clamp(strength - total_weight / 2, 3, 15)
+		is_control_pressed = true
+	if !is_control_pressed:#未按下control按键时 减速
+		velocity_damp_direction = (Vector2() - velocity).normalized()
+		velocity_damp_length = clamp(strength - total_weight / 2, 3, 15)
+		velocity += velocity_damp_direction * velocity_damp_length
+		if velocity.length() <= 15:
+			velocity = Vector2()
+	if velocity.length() > max_speed:
+		velocity = velocity.normalized() * max_speed
+	else:
+		velocity = velocity.normalized() * velocity.length()
+	self.linear_velocity = velocity
+	is_control_pressed = false
+
+func judge_control_direcition():#判断键盘wasd所控制的方向
+	if !Input.is_action_pressed("control_right") and !Input.is_action_pressed("control_left"):
+		control_direction.x = 0
+	if !Input.is_action_pressed("control_down") and !Input.is_action_pressed("control_up"):
+		control_direction.y = 0
+	if Input.is_action_pressed("control_right"):
+		control_direction.x = 1
+	if Input.is_action_pressed("control_left"):
+		control_direction.x = -1
+	if Input.is_action_pressed("control_down"):
+		control_direction.y = 1
+	if Input.is_action_pressed("control_up"):
+		control_direction.y = -1
 
 func judge_towards():#判断人物朝向
 	if is_ani:

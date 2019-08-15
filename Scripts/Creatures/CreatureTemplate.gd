@@ -59,7 +59,7 @@ func get_damage(collision_point_linear_speed,collision_point_rotate_speed,weapon
 		return
 	var judge_result = judge_whether_effective_damage(player_position)
 	#print(judge_result)
-	if judge_result:
+	if judge_result and self.weapon.type == "melee":
 		return
 	is_invincible = true
 	InvincibleTimer.start()
@@ -88,7 +88,6 @@ func update_LifeBar():
 
 func judge_whether_effective_damage(target_position):
 	raycast.enabled = true
-	raycast.set_collision_mask_bit(0,false)
 	raycast.set_collision_mask_bit(6,true)#检测墙体
 	var target_local_position = target_position - self.global_position
 	#print("target_position",target_local_position)
@@ -96,12 +95,12 @@ func judge_whether_effective_damage(target_position):
 	raycast.force_raycast_update()
 	print(raycast.is_colliding())
 	if raycast.is_colliding():
-		raycast.enabled = false
-		raycast.set_collision_mask_bit(6, false)
+		#raycast.enabled = false
+		#raycast.set_collision_mask_bit(6, false)
 		return true
 	else:
-		raycast.enabled = false
-		raycast.set_collision_mask_bit(6, false)
+		#raycast.enabled = false
+		#raycast.set_collision_mask_bit(6, false)
 		return false
 
 func lose_control(time):
@@ -119,12 +118,12 @@ func _on_DodgeCooldownTimer_timeout():
 	print("i can dodge now")
 	can_dodge = true
 
-func dodge():#冲刺
+func dodge(direction):#冲刺
 	if can_dodge:
-		var dodge_time = 0.25
+		var dodge_time = 0.15
 		#print("dodging")
-		self.linear_velocity = velocity * clamp(self.strength / 3.0, 1, 20)
-		weapon.linear_velocity = velocity * clamp(self.strength / 3.0, 1, 20)
+		weapon.linear_velocity = self.linear_velocity + direction * (max_speed / 2) * clamp(self.strength / 3.0, 1, 20)
+		self.linear_velocity += direction * (max_speed / 2) * clamp(self.strength / 3.0, 1, 20)
 		yield(get_tree().create_timer(dodge_time), "timeout")
 		#print("finish dodge")
 		can_dodge = false
@@ -149,6 +148,7 @@ func creature_init():
 	#用来检测是否为有效攻击（因为有时武器会穿墙）#
 	raycast = RayCast2D.new()
 	add_child(raycast)
+	raycast.set_collision_mask_bit(0,false)
 	#判断self是否是AnimatedSprite
 	if self.has_node("AnimatedSprite"):
 		is_ani = true
