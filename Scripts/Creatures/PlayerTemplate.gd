@@ -2,18 +2,11 @@ extends "res://Scripts/Creatures/CreatureTemplate.gd"
 
 signal hit
 
-var is_ani := false
-var ani
-
-var wave_weapon_vector
-var wave_weapon_speed
-var wave_weapon_direction
-
 var vector_player_to_weapon = Vector2()
 var vector_player_to_mouse = Vector2()
 var vector_weapon_to_mouse = Vector2()
 
-var towards : String
+var is_controlling := false
 
 func _ready():
 	position = Vector2(70,310)
@@ -21,12 +14,14 @@ func _ready():
 	if self.has_node("AnimatedSprite"):
 		is_ani = true
 		ani = $AnimatedSprite
+	self.linear_damp = 0
 	
 	weapon = weaponScene.instance()
 	self.add_child(weapon)
+	total_weight = self.weight + weapon.weight#人物与武器总重
+	#print("total weight is", total_weight)
 	weapon.tag = "player_weapon"
 	weapon.i_am_player_weapon()
-	weapon_vector = Vector2(1,0)
 	weapon.linear_damp = clamp(self.strength - weapon.weight + 2, 12, 18)
 	weapon.angular_damp = clamp(self.strength  - weapon.weight - 1, 3, 10)
 	
@@ -35,13 +30,13 @@ func _ready():
 
 func _physics_process(delta):
 	if Input.is_action_just_pressed("control_mouse_right_click"):
-		self.strength = self.strength + 5
+		self.strength = self.strength + 1
 		print("plus strength!",strength)
-	if is_ani:
-		judge_towards()
-		turn_to_towards()
+	if is_ani:#如果是AnimatedSprite
+		judge_towards()#判断朝向
+		turn_to_towards()#转向朝向
 	if self.can_control_self: 
-		control_move()
+		smooth_control_move(max_speed, total_weight)
 	if Input.is_key_pressed(KEY_SHIFT):
 		.dodge()
 	
@@ -50,11 +45,11 @@ func _physics_process(delta):
 	vector_player_to_weapon = weapon.get_global_position() - self.get_global_position()
 	
 	if weapon.is_controllable == true:
-		rotate_weapon((self.strength - weapon.weight) * 1.5,delta)
+		rotate_weapon((self.strength - weapon.weight) * 1.3,delta)
 	if weapon.type == "melee":
 		wave_weapon()
 
-func control_move():#控制player移动
+func basic_control_move(speed):#基础 控制人物移动
 	if tag == "player":
 		velocity = Vector2()
 		if Input.is_action_pressed("control_right"):
@@ -65,8 +60,37 @@ func control_move():#控制player移动
 			velocity.y += 1
 		if Input.is_action_pressed("control_up"):
 			velocity.y -= 1
-		velocity = velocity.normalized() * max_speed
+		velocity = velocity.normalized() * speed
 		self.linear_velocity = velocity
+
+func smooth_control_move(max_speed, total_weight):#平滑 控制人物移动
+	if tag == "player":
+		var velocity_damp_direction = Vector2()
+		var velocity_damp_length = 0
+		if Input.is_action_pressed("control_right"):
+			velocity.x += clamp(strength - total_weight / 2, 3, 15)
+			is_controlling = true
+		if Input.is_action_pressed("control_left"):
+			velocity.x -= clamp(strength - total_weight / 2, 3, 15)
+			is_controlling = true
+		if Input.is_action_pressed("control_down"):
+			velocity.y += clamp(strength - total_weight / 2, 3, 15)
+			is_controlling = true
+		if Input.is_action_pressed("control_up"):
+			velocity.y -= clamp(strength - total_weight / 2, 3, 15)
+			is_controlling = true
+		if !is_controlling:#未按下control按键时 减速
+			velocity_damp_direction = (Vector2() - velocity).normalized()
+			velocity_damp_length = clamp(strength - total_weight / 2, 3, 15)
+			velocity += velocity_damp_direction * velocity_damp_length
+			if velocity.length() <= 15:
+				velocity = Vector2()
+		if velocity.length() > max_speed:
+			velocity = velocity.normalized() * max_speed
+		else:
+			velocity = velocity.normalized() * velocity.length()
+		self.linear_velocity = velocity
+		is_controlling = false
 
 func judge_towards():
 	if is_ani:

@@ -1,7 +1,7 @@
 extends RigidBody2D
 
-#一些属性
-export(int) var max_speed = 100#最高速度
+#一些基本属性
+export(int) var max_speed = 60#最高速度
 export(int) var strength = 20
 export(int) var max_life = 100
 export(int) var max_stamina = 100
@@ -12,13 +12,22 @@ var weapon
 var weapon_speed
 var stamina
 var life
+var total_weight
 var alive = true		# 是否存活
+
+#用于AnimatedSprite相关
+var is_ani := false
+var ani
+var towards : String
 
 var velocity = Vector2()
 
-onready var weapon_vector:Vector2
-
+#挥舞武器相关变量
 var weapon_speed_bonus
+var wave_weapon_vector
+var wave_weapon_speed
+var wave_weapon_direction
+
 var is_invincible := false
 var can_control_self := true
 
@@ -32,7 +41,6 @@ var can_dodge = true
 onready var InvincibleTimer#无敌时间计时器
 var invincible_time : float#无敌时间
 
-
 onready var margin = $Margin
 onready var raycast#用来检测是否为有效攻击（有时武器会穿墙）
 
@@ -40,6 +48,7 @@ func _ready():
 	raycast = RayCast2D.new()
 	add_child(raycast)
 	
+	#冲刺&闪避方法相关
 	DodgeCooldownTimer = Timer.new()
 	add_child(DodgeCooldownTimer)
 	DodgeCooldownTimer.one_shot = true
@@ -47,6 +56,7 @@ func _ready():
 	#print(DodgeCooldownTimer.wait_time)
 	DodgeCooldownTimer.connect("timeout", self, "_on_DodgeCooldownTimer_timeout")
 	
+	#无敌状态相关
 	invincible_time = 15.0 / strength
 	#print("hhh",invincible_time)
 	InvincibleTimer = Timer.new()
@@ -54,12 +64,8 @@ func _ready():
 	InvincibleTimer.one_shot = true
 	InvincibleTimer.wait_time = invincible_time
 	InvincibleTimer.connect("timeout", self, "_on_InvincibleTimer_timeout")
-	
-	#print("my strength is",strength)
-	#print("time is",invincible_time)
-	
+
 func _physics_process(delta):
-	#print("time is",invincible_time)
 	pos2 = self.global_position
 	self.linear_speed = pos2 - pos1
 	pos1 = pos2
