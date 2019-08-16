@@ -20,8 +20,8 @@ onready var player = self.get_parent().get_parent().get_parent().get_parent().ge
 
 func _ready():
 	self.add_to_group("enemies")#添加到组enemies中
-	enemy_init()
-	enemy_weapon_init()
+	_enemy_init()
+	_enemy_weapon_init()
 
 func _physics_process(delta):
 	#var arr = get_tree().get_nodes_in_group("enemies")
@@ -75,7 +75,7 @@ func ai_run(direction,speed):
 func ai_dodge(direction):
 	pass
 
-func enemy_init():
+func _enemy_init():
 	self.tag = "enemy"
 	i_am_enemy()
 	life = max_life
@@ -85,7 +85,7 @@ func enemy_init():
 	sight_line.set_collision_mask_bit(0,false)
 	sight_line.set_collision_mask_bit(6,true)#检测墙体
 
-func enemy_weapon_init():
+func _enemy_weapon_init():
 	weapon = weaponScene.instance()
 	self.add_child(weapon)
 	weapon.tag = "enemy_weapon"

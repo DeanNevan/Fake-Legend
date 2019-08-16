@@ -1,32 +1,39 @@
-[gd_scene load_steps=11 format=2]
+[gd_scene load_steps=13 format=2]
 
-[ext_resource path="res://Scripts/Creatures/PlayerTemplate.gd" type="Script" id=1]
-[ext_resource path="res://Assets/Art/Creatures/Update/Violet/black_purple_back.png" type="Texture" id=2]
-[ext_resource path="res://Assets/Art/Creatures/Update/Violet/black_purple_idle.png" type="Texture" id=3]
-[ext_resource path="res://Assets/Art/Creatures/Update/Violet/black_purple_horizon.png" type="Texture" id=4]
-[ext_resource path="res://Assets/Art/Creatures/Update/Violet/black_purple_front.png" type="Texture" id=5]
+[ext_resource path="res://Assets/Creatures/Update/Violet/Violet.gd" type="Script" id=1]
+[ext_resource path="res://Assets/Weapons/Simple/Sword/Sword.tscn" type="PackedScene" id=2]
+[ext_resource path="res://Assets/Art/Creatures/Update/Violet/black_purple_left.png" type="Texture" id=3]
+[ext_resource path="res://Assets/Art/Creatures/Update/Violet/black_purple_right.png" type="Texture" id=4]
+[ext_resource path="res://Assets/Art/Creatures/Update/Violet/black_purple_up.png" type="Texture" id=5]
+[ext_resource path="res://Assets/Art/Creatures/Update/Violet/black_purple_idle.png" type="Texture" id=6]
+[ext_resource path="res://Assets/Art/Creatures/Update/Violet/black_purple_down.png" type="Texture" id=7]
 
 [sub_resource type="PhysicsMaterial" id=1]
 friction = 0.4
 
 [sub_resource type="SpriteFrames" id=2]
 animations = [ {
-"frames": [ ExtResource( 2 ) ],
-"loop": true,
-"name": "up",
-"speed": 5.0
-}, {
 "frames": [ ExtResource( 3 ) ],
 "loop": true,
-"name": "idle",
+"name": "left",
 "speed": 5.0
 }, {
 "frames": [ ExtResource( 4 ) ],
 "loop": true,
-"name": "horizon",
+"name": "right",
 "speed": 5.0
 }, {
 "frames": [ ExtResource( 5 ) ],
+"loop": true,
+"name": "up",
+"speed": 5.0
+}, {
+"frames": [ ExtResource( 6 ) ],
+"loop": true,
+"name": "idle",
+"speed": 5.0
+}, {
+"frames": [ ExtResource( 7 ) ],
 "loop": true,
 "name": "down",
 "speed": 5.0
@@ -36,7 +43,7 @@ animations = [ {
 points = PoolVector2Array( -15, -10, -11, -16, 10, -16, 15, -11, 15, 8, 5, 21, -5, 21, -13, 12, -14, 2, -15, -10 )
 
 [sub_resource type="Animation" id=4]
-resource_name = "Breathe"
+resource_name = "breathe"
 length = 2.0
 loop = true
 tracks/0/type = "value"
@@ -49,7 +56,7 @@ tracks/0/keys = {
 "times": PoolRealArray( 0, 1, 2 ),
 "transitions": PoolRealArray( 0.554785, 1, 1.62451 ),
 "update": 0,
-"values": [ Vector2( 1, 1 ), Vector2( 0.9, 0.9 ), Vector2( 1, 1 ) ]
+"values": [ Vector2( 1, 1 ), Vector2( 1.1, 0.9 ), Vector2( 1, 1 ) ]
 }
 tracks/1/type = "value"
 tracks/1/path = NodePath("Margin:scale")
@@ -61,7 +68,7 @@ tracks/1/keys = {
 "times": PoolRealArray( 0, 1, 2 ),
 "transitions": PoolRealArray( 0.554785, 1, 1.62451 ),
 "update": 0,
-"values": [ Vector2( 1, 1 ), Vector2( 0.9, 0.9 ), Vector2( 1, 1 ) ]
+"values": [ Vector2( 1, 1 ), Vector2( 1.1, 0.9 ), Vector2( 1, 1 ) ]
 }
 tracks/2/type = "value"
 tracks/2/path = NodePath("AnimatedSprite:scale")
@@ -73,7 +80,7 @@ tracks/2/keys = {
 "times": PoolRealArray( 0, 1, 2 ),
 "transitions": PoolRealArray( 0.554785, 1, 1.62451 ),
 "update": 0,
-"values": [ Vector2( 1, 1 ), Vector2( 0.9, 0.9 ), Vector2( 1, 1 ) ]
+"values": [ Vector2( 1, 1 ), Vector2( 1.1, 0.9 ), Vector2( 1, 1 ) ]
 }
 
 [sub_resource type="Curve2D" id=5]
@@ -89,27 +96,32 @@ collision_mask = 0
 mode = 2
 mass = 2.04082
 physics_material_override = SubResource( 1 )
-linear_damp = 10.0
+linear_damp = 0.0
 script = ExtResource( 1 )
 __meta__ = {
 "_edit_horizontal_guides_": [  ]
 }
-max_speed = 100
+weaponScene = ExtResource( 2 )
 
 [node name="AnimatedSprite" type="AnimatedSprite" parent="."]
 position = Vector2( 0, -10 )
+scale = Vector2( 1.1, 0.9 )
 frames = SubResource( 2 )
-animation = "idle"
+animation = "down"
+playing = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2( 0, -10 )
+scale = Vector2( 1.1, 0.9 )
 shape = SubResource( 3 )
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
-autoplay = "Breathe"
+autoplay = "breathe"
 playback_process_mode = 0
-anims/Breathe = SubResource( 4 )
+anims/breathe = SubResource( 4 )
+"anims/breathe 2" = SubResource( 4 )
 
 [node name="Margin" type="Path2D" parent="."]
 position = Vector2( 0, -10 )
+scale = Vector2( 1.1, 0.9 )
 curve = SubResource( 5 )

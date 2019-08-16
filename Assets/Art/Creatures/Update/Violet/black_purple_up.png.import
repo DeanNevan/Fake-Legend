@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/black_purple_horizon.png-7f8c4b6f8363cf963a6ed0a7f667e3ed.stex"
+path="res://.import/black_purple_up.png-1e81c1c2dd1765586730ff96e6da7025.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/Art/Creatures/Update/Violet/black_purple_horizon.png"
-dest_files=[ "res://.import/black_purple_horizon.png-7f8c4b6f8363cf963a6ed0a7f667e3ed.stex" ]
+source_file="res://Assets/Art/Creatures/Update/Violet/black_purple_up.png"
+dest_files=[ "res://.import/black_purple_up.png-1e81c1c2dd1765586730ff96e6da7025.stex" ]
 
 [params]
 

@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/black_purple_back.png-acb015cc1db24011027521a85bad5645.stex"
+path="res://.import/black_purple_left.png-6aa35bd182ddf7a3126dfda47042d7bb.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/Art/Creatures/Update/Violet/black_purple_back.png"
-dest_files=[ "res://.import/black_purple_back.png-acb015cc1db24011027521a85bad5645.stex" ]
+source_file="res://Assets/Art/Creatures/Update/Violet/black_purple_left.png"
+dest_files=[ "res://.import/black_purple_left.png-6aa35bd182ddf7a3126dfda47042d7bb.stex" ]
 
 [params]
 

@@ -12,25 +12,24 @@ var is_controlling := true
 var is_control_pressed := false
 
 func _ready():
-	player_init()
-	player_weapon_init()
+	_player_init()
+	_player_weapon_init()
 	total_weight = self.weight + weapon.weight#人物与武器总重
 	#print("total weight is", total_weight)
 
 func _physics_process(delta):
+	generate_ghost()
 	judge_control_direcition()#判断wasd所控制的方向
-
 	if Input.is_action_just_pressed("control_mouse_right_click"):
 		self.strength = self.strength + 1
 		print("plus strength!",strength)
 	if is_ani:#如果是AnimatedSprite
-		judge_towards()#判断朝向
+		judge_towards(get_global_mouse_position())#判断朝向
 		turn_to_towards()#转向朝向
-	if self.can_control_self: 
+	if body_capability["controllable"] == true: 
 		smooth_control_move(max_speed, total_weight)
 	if Input.is_key_pressed(KEY_SHIFT):
 		dodge(control_direction.normalized())
-	
 	vector_player_to_mouse = get_global_mouse_position() - self.get_global_position()
 	vector_weapon_to_mouse = get_global_mouse_position() - weapon.get_global_position()
 	vector_player_to_weapon = weapon.get_global_position() - self.get_global_position()
@@ -100,36 +99,6 @@ func judge_control_direcition():#判断键盘wasd所控制的方向
 	if Input.is_action_pressed("control_up"):
 		control_direction.y = -1
 
-func judge_towards():#判断人物朝向
-	if is_ani:
-		var vec_x = vector_player_to_mouse.x
-		var vec_y = vector_player_to_mouse.y
-		if vec_x == 0:
-			return
-		if (vec_y / vec_x) >= -1 and (vec_y / vec_x) <= 1:
-			if vec_x >= 0:
-				towards = "right"
-			else:
-				towards = "left"
-		else:
-			if vec_y > 0:
-				towards = "down"
-			else:
-				towards = "up"
-
-func turn_to_towards():#转向朝向
-	if is_ani:
-		if towards == "right":
-			ani.flip_h = false
-			ani.animation = "horizon"
-		if towards == "left":
-			ani.flip_h = true
-			ani.animation = "horizon"
-		if towards == "up":
-			ani.animation = "up"
-		if towards == "down":
-			ani.animation = "down"
-
 func get_wave_weapon_vector(weapon_length):
 	if Input.is_action_pressed("control_mouse_left_click"):
 		var target_postion = Vector2()
@@ -177,14 +146,15 @@ func wave_weapon():
 	wave_weapon_direction = wave_weapon_vector.normalized()
 	weapon.linear_velocity += wave_weapon_direction * wave_weapon_speed * 0.8 * weapon_speed_bonus
 
-func player_init():
+func _player_init():
+	self.add_to_group("player")
 	position = Vector2(70,310)
 	i_am_player()
 	tag = "player"
 	life = max_life
 	arm_length = 3
 
-func player_weapon_init():
+func _player_weapon_init():
 	weapon = weaponScene.instance()
 	self.add_child(weapon)
 	weapon.tag = "player_weapon"

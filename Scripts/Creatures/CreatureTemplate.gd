@@ -7,6 +7,7 @@ export(int) var max_life = 100
 export(int) var max_stamina = 100
 export(PackedScene) var weaponScene
 
+var body_transform := Vector2()#用于记录子节点偏移量
 var tag = "creature"
 var weapon
 var weapon_speed
@@ -29,15 +30,14 @@ var wave_weapon_vector
 var wave_weapon_speed
 var wave_weapon_direction
 
-var is_invincible := false
-var can_control_self := true
+var body_capability := {"invincible" : false, "controllable" : true, "can_dodge" : true}
 
 var pos1 = self.global_position
 var pos2 = self.global_position
 var linear_speed : Vector2 = pos2 - pos1
 
 var DodgeCooldownTimer
-var can_dodge = true
+var dodge_time = 0.2
 
 onready var InvincibleTimer#无敌时间计时器
 var invincible_time : float#无敌时间
@@ -45,23 +45,38 @@ var invincible_time : float#无敌时间
 onready var margin = $Margin
 onready var raycast#用来检测是否为有效攻击（有时武器会穿墙）
 
+#位置栈#暂无内容#
+var position_pool_length := 30
+var position_pool_enabled := true
+var position_pool
+
+var ghost
+var update_ghost := true
+var ghost_global_position := Vector2()
+
+var _update_ago_position := false
+var _update_ago_position_time = dodge_time / 2
+var ago_position := Vector2()
+
 func _ready():
-	creature_init()
+	_creature_init()
+	_ghost_init()
 
 func _physics_process(delta):
 	pos2 = self.global_position
 	self.linear_speed = pos2 - pos1
 	pos1 = pos2
+	#generate_ghost()
 
 func get_damage(collision_point_linear_speed,collision_point_rotate_speed,weapon_damage,weapon_hit_tag:int,player_position):
 	#print("time is",invincible_time)
-	if is_invincible:
+	if body_capability["invincible"] == true:
 		return
 	var judge_result = judge_whether_effective_damage(player_position)
 	#print(judge_result)
 	if judge_result and self.weapon.type == "melee":
 		return
-	is_invincible = true
+	body_capability["invincible"] = true
 	InvincibleTimer.start()
 	#print("old life is",life)
 	if alive == false:	# 如果没有存活，则退出函数
@@ -105,29 +120,82 @@ func judge_whether_effective_damage(target_position):
 
 func lose_control(time):
 	print("lose control",invincible_time)
-	self.can_control_self = false
+	body_capability["controllable"] = false
 	yield(get_tree().create_timer(time),"timeout")
-	self.can_control_self = true
+	body_capability["controllable"] = true
 	print("can control")
 
 func _on_InvincibleTimer_timeout():
 	#print("invincible timer timeout")
-	is_invincible = false
+	body_capability["invincible"] = false
 
 func _on_DodgeCooldownTimer_timeout():
 	print("i can dodge now")
-	can_dodge = true
+	body_capability["can_dodge"] = true
 
 func dodge(direction):#冲刺
-	if can_dodge:
-		var dodge_time = 0.15
-		#print("dodging")
-		weapon.linear_velocity = self.linear_velocity + direction * (max_speed / 2) * clamp(self.strength / 3.0, 1, 20)
-		self.linear_velocity += direction * (max_speed / 2) * clamp(self.strength / 3.0, 1, 20)
+	if body_capability["can_dodge"] == true and body_capability["controllable"] == true:
+		body_capability["controllable"] = false
+		var dodge_velocity_bonus = direction * (max_speed / 2) * clamp(self.strength / 2.0, 1, 20)
+		print("dodging")
+		weapon.linear_velocity = dodge_velocity_bonus
+		self.linear_velocity = dodge_velocity_bonus
+		ghost.visible = true
 		yield(get_tree().create_timer(dodge_time), "timeout")
-		#print("finish dodge")
-		can_dodge = false
+		ghost.visible = false
+		print("finish dodge")
+		body_capability["can_dodge"] = false
+		body_capability["controllable"] = true
 		DodgeCooldownTimer.start()
+
+func generate_ghost(interval_time = dodge_time / 3):
+	if update_ghost:
+		#print("!!!!")
+		update_ghost = false
+		ghost.animation = ani.animation
+		ghost.frame = ani.frame
+		ghost.global_position = self.global_position + body_transform
+		ghost_global_position = ghost.global_position
+		yield(get_tree().create_timer(interval_time), "timeout")
+		update_ghost = true
+	ghost.global_position = ghost_global_position
+
+func _get_ago_position():
+	if _update_ago_position:
+		_update_ago_position = false
+		ago_position = self.global_position
+		yield(get_tree().create_timer(_update_ago_position_time), "timeout")
+		_update_ago_position = true
+
+func judge_towards(target_global_position):#判断人物朝向
+	if is_ani:
+		var vec_x
+		var vec_y
+		vec_x = target_global_position.x - self.global_position.x
+		vec_y = target_global_position.y - self.global_position.y
+		if vec_x == 0:
+			return
+		if (vec_y / vec_x) >= -1 and (vec_y / vec_x) <= 1:
+			if vec_x >= 0:
+				towards = "right"
+			else:
+				towards = "left"
+		else:
+			if vec_y > 0:
+				towards = "down"
+			else:
+				towards = "up"
+
+func turn_to_towards():#转向朝向
+	if is_ani:
+		if towards == "right":
+			ani.animation = "right"
+		if towards == "left":
+			ani.animation = "left"
+		if towards == "up":
+			ani.animation = "up"
+		if towards == "down":
+			ani.animation = "down"
 
 func i_am_enemy():
 	self.set_collision_layer_bit(1, true)
@@ -144,15 +212,20 @@ func i_am_player():
 	self.set_collision_mask_bit(5, true)
 	self.set_collision_mask_bit(6, true)
 
-func creature_init():
+func _creature_init():
+	self.linear_damp = 0
+	self.angular_damp = 0
+	self.mode = RigidBody2D.MODE_CHARACTER
+	#判断self是否是AnimatedSprite
+	if self.has_node("AnimatedSprite"):
+		$AnimatedSprite.animation = "idle"
+		is_ani = true
+		ani = $AnimatedSprite
+		#ani.animation = "idle"
 	#用来检测是否为有效攻击（因为有时武器会穿墙）#
 	raycast = RayCast2D.new()
 	add_child(raycast)
 	raycast.set_collision_mask_bit(0,false)
-	#判断self是否是AnimatedSprite
-	if self.has_node("AnimatedSprite"):
-		is_ani = true
-		ani = $AnimatedSprite
 	#冲刺&闪避方法相关#
 	DodgeCooldownTimer = Timer.new()
 	add_child(DodgeCooldownTimer)
@@ -166,3 +239,16 @@ func creature_init():
 	InvincibleTimer.one_shot = true
 	InvincibleTimer.wait_time = invincible_time
 	InvincibleTimer.connect("timeout", self, "_on_InvincibleTimer_timeout")
+
+func _ghost_init(alpha = 0.3):
+	if is_ani:
+		ghost = AnimatedSprite.new()
+		ghost.frames = ani.frames
+	else:
+		ghost = Sprite.new()
+		ghost.texture = $Sprite.texture
+	add_child(ghost)
+	ghost.modulate.a = alpha
+	ghost.visible = false
+	#ghost.animation = ani.animation
+	#ghost.frame = ani.frame
