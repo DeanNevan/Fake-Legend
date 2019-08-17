@@ -1,8 +1,8 @@
-extends "res://Scripts/Creatures/PlayerTemplate.gd"
+extends "res://Scripts/Creatures/CreatureTemplate.gd"
 
 
 func _ready():
-	body_transform = $AnimatedSprite.position
+	pass
 
 func _process(delta):
 	pass

@@ -1,7 +1,5 @@
 extends "res://Scripts/Creatures/CreatureTemplate.gd"
 
-signal hit
-
 var vector_player_to_weapon = Vector2()
 var vector_player_to_mouse = Vector2()
 var vector_weapon_to_mouse = Vector2()
@@ -18,6 +16,9 @@ func _ready():
 	#print("total weight is", total_weight)
 
 func _physics_process(delta):
+	vector_player_to_mouse = get_global_mouse_position() - self.get_global_position()
+	vector_weapon_to_mouse = get_global_mouse_position() - weapon.get_global_position()
+	vector_player_to_weapon = weapon.get_global_position() - self.get_global_position()
 	generate_ghost()
 	judge_control_direcition()#判断wasd所控制的方向
 	if Input.is_action_just_pressed("control_mouse_right_click"):
@@ -27,19 +28,18 @@ func _physics_process(delta):
 		judge_towards(get_global_mouse_position())#判断朝向
 		turn_to_towards()#转向朝向
 	if body_capability["controllable"] == true: 
-		smooth_control_move(max_speed, total_weight)
+		_smooth_control_move()
 	if Input.is_key_pressed(KEY_SHIFT):
 		dodge(control_direction.normalized())
-	vector_player_to_mouse = get_global_mouse_position() - self.get_global_position()
-	vector_weapon_to_mouse = get_global_mouse_position() - weapon.get_global_position()
-	vector_player_to_weapon = weapon.get_global_position() - self.get_global_position()
-	
 	if weapon.is_controllable == true:
 		rotate_weapon((self.strength - weapon.weight) * 0.7,delta)
 	if weapon.type == "melee":
 		wave_weapon()
 
-func basic_control_move(speed):#基础 控制人物移动
+func _input(event):
+	pass
+
+func _basic_control_move(speed):#基础 控制人物移动
 	velocity = Vector2()
 	if Input.is_action_pressed("control_right"):
 		velocity.x += 1
@@ -57,24 +57,24 @@ func basic_control_move(speed):#基础 控制人物移动
 	self.linear_velocity = velocity
 	is_control_pressed = false
 
-func smooth_control_move(max_speed, total_weight):#平滑 控制人物移动
+func _smooth_control_move():#平滑 控制人物移动
 	var velocity_damp_direction = Vector2()
 	var velocity_damp_length = 0
 	if Input.is_action_pressed("control_right"):
-		velocity.x += clamp(strength - total_weight / 2, 3, 15)
+		velocity.x += clamp(strength - total_weight / 2.0, 3, 15)
 		is_control_pressed = true
 	if Input.is_action_pressed("control_left"):
-		velocity.x -= clamp(strength - total_weight / 2, 3, 15)
+		velocity.x -= clamp(strength - total_weight / 2.0, 3, 15)
 		is_control_pressed = true
 	if Input.is_action_pressed("control_down"):
-		velocity.y += clamp(strength - total_weight / 2, 3, 15)
+		velocity.y += clamp(strength - total_weight / 2.0, 3, 15)
 		is_control_pressed = true
 	if Input.is_action_pressed("control_up"):
-		velocity.y -= clamp(strength - total_weight / 2, 3, 15)
+		velocity.y -= clamp(strength - total_weight / 2.0, 3, 15)
 		is_control_pressed = true
 	if !is_control_pressed:#未按下control按键时 减速
 		velocity_damp_direction = (Vector2() - velocity).normalized()
-		velocity_damp_length = clamp(strength - total_weight / 2, 3, 15)
+		velocity_damp_length = clamp(strength - total_weight / 2.0, 3, 15)
 		velocity += velocity_damp_direction * velocity_damp_length
 		if velocity.length() <= 15:
 			velocity = Vector2()

@@ -1,5 +1,7 @@
 extends RigidBody2D
 
+signal move
+
 #一些基本属性
 export(int) var max_speed = 60#最高速度
 export(int) var strength = 20
@@ -14,7 +16,7 @@ var weapon_speed
 var stamina#精力
 var life#生命
 var arm_length#臂展
-var total_weight#总重
+var total_weight = 0#总重
 var alive = true# 是否存活
 
 #用于AnimatedSprite相关
@@ -51,8 +53,10 @@ var position_pool_enabled := true
 var position_pool
 
 var ghost
-var update_ghost := true
-var ghost_global_position := Vector2()
+var ghost_modulate_alpha := 0.3#残影可见度0-1
+var is_ghost_visible := false#残影是否可见
+var _update_ghost := true
+var _ghost_global_position := Vector2()
 
 var _update_ago_position := false
 var _update_ago_position_time = dodge_time / 2
@@ -149,16 +153,16 @@ func dodge(direction):#冲刺
 		DodgeCooldownTimer.start()
 
 func generate_ghost(interval_time = dodge_time / 3):
-	if update_ghost:
+	if _update_ghost:
 		#print("!!!!")
-		update_ghost = false
+		_update_ghost = false
 		ghost.animation = ani.animation
 		ghost.frame = ani.frame
 		ghost.global_position = self.global_position + body_transform
-		ghost_global_position = ghost.global_position
+		_ghost_global_position = ghost.global_position
 		yield(get_tree().create_timer(interval_time), "timeout")
-		update_ghost = true
-	ghost.global_position = ghost_global_position
+		_update_ghost = true
+	ghost.global_position = _ghost_global_position
 
 func _get_ago_position():
 	if _update_ago_position:
@@ -170,21 +174,11 @@ func _get_ago_position():
 func judge_towards(target_global_position):#判断人物朝向
 	if is_ani:
 		var vec_x
-		var vec_y
 		vec_x = target_global_position.x - self.global_position.x
-		vec_y = target_global_position.y - self.global_position.y
-		if vec_x == 0:
-			return
-		if (vec_y / vec_x) >= -1 and (vec_y / vec_x) <= 1:
-			if vec_x >= 0:
-				towards = "right"
-			else:
-				towards = "left"
+		if vec_x >= 0:
+			towards = "right"
 		else:
-			if vec_y > 0:
-				towards = "down"
-			else:
-				towards = "up"
+			towards = "left"
 
 func turn_to_towards():#转向朝向
 	if is_ani:
@@ -192,10 +186,6 @@ func turn_to_towards():#转向朝向
 			ani.animation = "right"
 		if towards == "left":
 			ani.animation = "left"
-		if towards == "up":
-			ani.animation = "up"
-		if towards == "down":
-			ani.animation = "down"
 
 func i_am_enemy():
 	self.set_collision_layer_bit(1, true)
@@ -221,7 +211,10 @@ func _creature_init():
 		$AnimatedSprite.animation = "idle"
 		is_ani = true
 		ani = $AnimatedSprite
+		body_transform = $AnimatedSprite.position
 		#ani.animation = "idle"
+	else:
+		body_transform = $Sprite.position
 	#用来检测是否为有效攻击（因为有时武器会穿墙）#
 	raycast = RayCast2D.new()
 	add_child(raycast)
@@ -240,7 +233,7 @@ func _creature_init():
 	InvincibleTimer.wait_time = invincible_time
 	InvincibleTimer.connect("timeout", self, "_on_InvincibleTimer_timeout")
 
-func _ghost_init(alpha = 0.3):
+func _ghost_init():
 	if is_ani:
 		ghost = AnimatedSprite.new()
 		ghost.frames = ani.frames
@@ -248,7 +241,7 @@ func _ghost_init(alpha = 0.3):
 		ghost = Sprite.new()
 		ghost.texture = $Sprite.texture
 	add_child(ghost)
-	ghost.modulate.a = alpha
-	ghost.visible = false
+	ghost.modulate.a = ghost_modulate_alpha
+	ghost.visible = is_ghost_visible
 	#ghost.animation = ani.animation
 	#ghost.frame = ani.frame

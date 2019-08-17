@@ -1,41 +1,28 @@
-[gd_scene load_steps=13 format=2]
+[gd_scene load_steps=10 format=2]
 
-[ext_resource path="res://Assets/Creatures/Update/Violet/Violet.gd" type="Script" id=1]
-[ext_resource path="res://Assets/Weapons/Simple/Sword/Sword.tscn" type="PackedScene" id=2]
-[ext_resource path="res://Assets/Art/Creatures/Update/Violet/black_purple_left.png" type="Texture" id=3]
-[ext_resource path="res://Assets/Art/Creatures/Update/Violet/black_purple_right.png" type="Texture" id=4]
-[ext_resource path="res://Assets/Art/Creatures/Update/Violet/black_purple_up.png" type="Texture" id=5]
-[ext_resource path="res://Assets/Art/Creatures/Update/Violet/black_purple_idle.png" type="Texture" id=6]
-[ext_resource path="res://Assets/Art/Creatures/Update/Violet/black_purple_down.png" type="Texture" id=7]
+[ext_resource path="res://Scripts/Creatures/PlayerTemplate.gd" type="Script" id=1]
+[ext_resource path="res://Assets/Art/Creatures/Update/Violet/black_purple_left.png" type="Texture" id=2]
+[ext_resource path="res://Assets/Art/Creatures/Update/Violet/black_purple_right.png" type="Texture" id=3]
+[ext_resource path="res://Assets/Art/Creatures/Update/Violet/black_purple_idle.png" type="Texture" id=4]
 
 [sub_resource type="PhysicsMaterial" id=1]
 friction = 0.4
 
 [sub_resource type="SpriteFrames" id=2]
 animations = [ {
-"frames": [ ExtResource( 3 ) ],
+"frames": [ ExtResource( 2 ) ],
 "loop": true,
 "name": "left",
 "speed": 5.0
 }, {
-"frames": [ ExtResource( 4 ) ],
+"frames": [ ExtResource( 3 ) ],
 "loop": true,
 "name": "right",
 "speed": 5.0
 }, {
-"frames": [ ExtResource( 5 ) ],
-"loop": true,
-"name": "up",
-"speed": 5.0
-}, {
-"frames": [ ExtResource( 6 ) ],
+"frames": [ ExtResource( 4 ) ],
 "loop": true,
 "name": "idle",
-"speed": 5.0
-}, {
-"frames": [ ExtResource( 7 ) ],
-"loop": true,
-"name": "down",
 "speed": 5.0
 } ]
 
@@ -101,13 +88,12 @@ script = ExtResource( 1 )
 __meta__ = {
 "_edit_horizontal_guides_": [  ]
 }
-weaponScene = ExtResource( 2 )
 
 [node name="AnimatedSprite" type="AnimatedSprite" parent="."]
 position = Vector2( 0, -10 )
 scale = Vector2( 1.1, 0.9 )
 frames = SubResource( 2 )
-animation = "down"
+animation = "right"
 playing = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
@@ -125,3 +111,5 @@ anims/breathe = SubResource( 4 )
 position = Vector2( 0, -10 )
 scale = Vector2( 1.1, 0.9 )
 curve = SubResource( 5 )
+
+[node name="Abilities" type="Node" parent="."]

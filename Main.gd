@@ -6,8 +6,7 @@ onready var player = $Player
 #var player = preload("res://Assets/Creatures/Update/Violet/Violet.tscn")
 
 func _ready():
-	#player.instance()
-	#self.add_child(player)
+	
 	pass
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
