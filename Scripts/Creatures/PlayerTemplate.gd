@@ -9,7 +9,10 @@ var control_direction := Vector2()#键盘按键wasd所指方向
 var is_controlling := true
 var is_control_pressed := false
 
+
+
 func _ready():
+	preload("res://Scripts/Creatures/CreatureTemplate.gd")
 	_player_init()
 	_player_weapon_init()
 	total_weight = self.weight + weapon.weight#人物与武器总重
@@ -19,22 +22,26 @@ func _physics_process(delta):
 	vector_player_to_mouse = get_global_mouse_position() - self.get_global_position()
 	vector_weapon_to_mouse = get_global_mouse_position() - weapon.get_global_position()
 	vector_player_to_weapon = weapon.get_global_position() - self.get_global_position()
+	judge_towards(get_global_mouse_position())#判断朝向
+	update_animation()#更新动画
 	generate_ghost()
 	judge_control_direcition()#判断wasd所控制的方向
 	if Input.is_action_just_pressed("control_mouse_right_click"):
 		self.strength = self.strength + 1
 		print("plus strength!",strength)
-	if is_ani:#如果是AnimatedSprite
-		judge_towards(get_global_mouse_position())#判断朝向
-		turn_to_towards()#转向朝向
 	if body_capability["controllable"] == true: 
 		_smooth_control_move()
 	if Input.is_key_pressed(KEY_SHIFT):
 		dodge(control_direction.normalized())
+	#print(wave_weapon_vector)
+	#print(wave_weapon_speed)
 	if weapon.is_controllable == true:
-		rotate_weapon((self.strength - weapon.weight) * 0.7,delta)
+		rotate_weapon((self.strength - weapon.weight) * 0.7, vector_weapon_to_mouse.normalized(), delta)
 	if weapon.type == "melee":
-		wave_weapon()
+		wave_weapon_vector = get_wave_weapon_vector()
+		wave_weapon_speed = get_wave_weapon_speed()
+		wave_weapon_direction = wave_weapon_vector.normalized()
+		wave_weapon(wave_weapon_direction, wave_weapon_speed)
 
 func _input(event):
 	pass
@@ -99,52 +106,35 @@ func judge_control_direcition():#判断键盘wasd所控制的方向
 	if Input.is_action_pressed("control_up"):
 		control_direction.y = -1
 
-func get_wave_weapon_vector(weapon_length):
+func get_wave_weapon_vector():
 	if Input.is_action_pressed("control_mouse_left_click"):
 		var target_postion = Vector2()
 		#print("weapon length",weapon_length)
-		if vector_player_to_mouse.length() <= weapon_length + arm_length:
+		if vector_player_to_mouse.length() <= arm_length:
 			target_postion = get_global_mouse_position()
 		else:
-			target_postion = self.get_global_position() + ((vector_player_to_mouse).normalized() * weapon_length)
+			target_postion = self.get_global_position() + ((vector_player_to_mouse).normalized() * arm_length)
 		#print("target position is",target_postion)
 		var wave_weapon_vector = target_postion - weapon.get_global_position()
 		#print("towards",wave_weapon_towards)
-		if (target_postion - weapon.get_global_position()).length() <= (weapon_length + arm_length) / 2.0:
-			return Vector2()
+		if weapon.position.length() > arm_length:
+			return - weapon.position * 5
 		else:
 			return wave_weapon_vector
-	elif weapon.position.length() >= 10:
-		var return_vector = -weapon.position*5
+	elif weapon.position.length() >= 3:
+		var return_vector = - weapon.position * 5
 		return return_vector
 	else:
 		weapon.position = Vector2()
 		return Vector2()
 
-func get_wave_weapon_speed(strength,weight,wave_weapon_vector,weapon_length):
+func get_wave_weapon_speed():
 	#print("strength",strength)
 	#print("weight",weight)
-	var speed = (strength - weight) * 1.5 + wave_weapon_vector.length() * 1.2
+	var del = clamp(strength - weapon.weight, 0, 30)
+	var speed = (strength - weapon.weight) * 1.2 + wave_weapon_vector.length() * 0.5
 	#print("speed is",speed)
 	return speed
-
-func rotate_weapon(speed,delta):
-	var target_direction = (vector_weapon_to_mouse).normalized()
-	var present_direction = Vector2(1, 0).rotated(weapon.global_rotation)
-	weapon.global_rotation = present_direction.linear_interpolate(target_direction, speed * delta).angle()
-
-func wave_weapon():
-	if weapon.position.length() <= 2:
-		weapon_speed_bonus = clamp((strength - weapon.weight) / 4, 1.5, 8.0)
-	#print(weapon_speed_bonus)
-	weapon_speed_bonus = weapon_speed_bonus * 0.9
-	if weapon_speed_bonus <=1:
-		weapon_speed_bonus = 1
-		
-	wave_weapon_vector = get_wave_weapon_vector(weapon.length)
-	wave_weapon_speed = get_wave_weapon_speed(self.strength,weapon.weight,wave_weapon_vector,weapon.length)
-	wave_weapon_direction = wave_weapon_vector.normalized()
-	weapon.linear_velocity += wave_weapon_direction * wave_weapon_speed * 0.8 * weapon_speed_bonus
 
 func _player_init():
 	self.add_to_group("player")
@@ -152,7 +142,7 @@ func _player_init():
 	i_am_player()
 	tag = "player"
 	life = max_life
-	arm_length = 3
+	arm_length = 25
 
 func _player_weapon_init():
 	weapon = weaponScene.instance()

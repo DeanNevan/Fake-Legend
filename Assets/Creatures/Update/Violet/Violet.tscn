@@ -1,9 +1,8 @@
-[gd_scene load_steps=10 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://Scripts/Creatures/PlayerTemplate.gd" type="Script" id=1]
-[ext_resource path="res://Assets/Art/Creatures/Update/Violet/black_purple_left.png" type="Texture" id=2]
-[ext_resource path="res://Assets/Art/Creatures/Update/Violet/black_purple_right.png" type="Texture" id=3]
-[ext_resource path="res://Assets/Art/Creatures/Update/Violet/black_purple_idle.png" type="Texture" id=4]
+[ext_resource path="res://Assets/Art/Creatures/Update/Violet/black_purple_idle.png" type="Texture" id=2]
+[ext_resource path="res://Assets/Art/Creatures/Update/Violet/black_purple_horizon.png" type="Texture" id=3]
 
 [sub_resource type="PhysicsMaterial" id=1]
 friction = 0.4
@@ -12,22 +11,17 @@ friction = 0.4
 animations = [ {
 "frames": [ ExtResource( 2 ) ],
 "loop": true,
-"name": "left",
+"name": "idle",
 "speed": 5.0
 }, {
 "frames": [ ExtResource( 3 ) ],
 "loop": true,
-"name": "right",
-"speed": 5.0
-}, {
-"frames": [ ExtResource( 4 ) ],
-"loop": true,
-"name": "idle",
+"name": "horizon",
 "speed": 5.0
 } ]
 
 [sub_resource type="ConvexPolygonShape2D" id=3]
-points = PoolVector2Array( -15, -10, -11, -16, 10, -16, 15, -11, 15, 8, 5, 21, -5, 21, -13, 12, -14, 2, -15, -10 )
+points = PoolVector2Array( -7.5, -5, -5.5, -8, 5, -8, 7.5, -5.5, 7.5, 4, 2.5, 10.5, -2.5, 10.5, -6.5, 6, -7, 1, -7.5, -5 )
 
 [sub_resource type="Animation" id=4]
 resource_name = "breathe"
@@ -73,7 +67,7 @@ tracks/2/keys = {
 [sub_resource type="Curve2D" id=5]
 bake_interval = 3.0
 _data = {
-"points": PoolVector2Array( 0, 0, 0, 0, -11, -16, 0, 0, 0, 0, 10, -16, 0, 0, 0, 0, 15, -11, 0, 0, 0, 0, 15, 8, 0, 0, 0, 0, 5, 21, 0, 0, 0, 0, -5, 21, 0, 0, 0, 0, -13, 12, 0, 0, 0, 0, -15, -10, 0, 0, 0, 0, -11, -16 )
+"points": PoolVector2Array( 0, 0, 0, 0, -7.49078, -5.09418, 0, 0, 0, 0, -5.55174, -8.03467, 0, 0, 0, 0, 5.07711, -7.94689, 0, 0, 0, 0, 7.51887, -5.48917, 0, 0, 0, 0, 7.48296, 3.94673, 0, 0, 0, 0, 2.59944, 10.2666, 0, 0, 0, 0, -2.49954, 10.486, 0, 0, 0, 0, -6.44944, 6.05334, 0, 0, 0, 0, -7.52669, -5.13807 )
 }
 
 [node name="Violet" type="RigidBody2D"]
@@ -93,7 +87,7 @@ __meta__ = {
 position = Vector2( 0, -10 )
 scale = Vector2( 1.1, 0.9 )
 frames = SubResource( 2 )
-animation = "right"
+animation = "horizon"
 playing = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]

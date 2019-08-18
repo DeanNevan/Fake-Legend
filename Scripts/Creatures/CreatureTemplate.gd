@@ -27,10 +27,10 @@ var towards : String
 var velocity = Vector2()
 
 #挥舞武器相关变量
-var weapon_speed_bonus
-var wave_weapon_vector
-var wave_weapon_speed
-var wave_weapon_direction
+var weapon_speed_bonus = 1
+var wave_weapon_vector := Vector2()
+var wave_weapon_speed = 0
+var wave_weapon_direction := Vector2()
 
 var body_capability := {"invincible" : false, "controllable" : true, "can_dodge" : true}
 
@@ -71,6 +71,20 @@ func _physics_process(delta):
 	self.linear_speed = pos2 - pos1
 	pos1 = pos2
 	#generate_ghost()
+
+func rotate_weapon(speed, target_direction, delta):
+	speed = clamp(speed, 2, 66)
+	var present_direction = Vector2(1, 0).rotated(weapon.global_rotation)
+	weapon.global_rotation = present_direction.linear_interpolate(target_direction, speed * delta).angle()
+
+func wave_weapon(direction, speed):
+	#if weapon.position.length() <= 2:
+		#weapon_speed_bonus = clamp((strength - weapon.weight) / 4, 1.5, 8.0)
+	#print(weapon_speed_bonus)
+	#weapon_speed_bonus = weapon_speed_bonus * 0.9
+	#if weapon_speed_bonus <=1:
+		#weapon_speed_bonus = 1
+	weapon.linear_velocity += direction * speed * 0.8
 
 func get_damage(collision_point_linear_speed,collision_point_rotate_speed,weapon_damage,weapon_hit_tag:int,player_position):
 	#print("time is",invincible_time)
@@ -174,18 +188,27 @@ func _get_ago_position():
 func judge_towards(target_global_position):#判断人物朝向
 	if is_ani:
 		var vec_x
+		var vec_y
 		vec_x = target_global_position.x - self.global_position.x
-		if vec_x >= 0:
+		vec_y = target_global_position.y - self.global_position.y
+		if vec_x > 0:
 			towards = "right"
-		else:
+		elif vec_x < 0:
 			towards = "left"
+		elif vec_x == 0 and vec_y == 0:
+			towards = "none"
 
-func turn_to_towards():#转向朝向
+func update_animation():#更新动画
 	if is_ani:
-		if towards == "right":
-			ani.animation = "right"
-		if towards == "left":
-			ani.animation = "left"
+		if self.body_capability["controllable"] == true:
+			if towards == "right":
+				ani.flip_h = false
+				ani.animation = "horizon"
+			if towards == "left":
+				ani.flip_h = true
+				ani.animation = "horizon"
+			if towards == "none":
+				ani.animation = "idle"
 
 func i_am_enemy():
 	self.set_collision_layer_bit(1, true)
