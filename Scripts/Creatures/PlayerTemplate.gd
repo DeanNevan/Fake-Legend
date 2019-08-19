@@ -15,17 +15,14 @@ func _ready():
 	preload("res://Scripts/Creatures/CreatureTemplate.gd")
 	_player_init()
 	_player_weapon_init()
-	total_weight = self.weight + weapon.weight#人物与武器总重
 	#print("total weight is", total_weight)
 
 func _physics_process(delta):
-	vector_player_to_mouse = get_global_mouse_position() - self.get_global_position()
-	vector_weapon_to_mouse = get_global_mouse_position() - weapon.get_global_position()
-	vector_player_to_weapon = weapon.get_global_position() - self.get_global_position()
+	_update_vector_of_player_mouse_weapon()
 	judge_towards(get_global_mouse_position())#判断朝向
 	update_animation()#更新动画
-	generate_ghost()
-	judge_control_direcition()#判断wasd所控制的方向
+	update_ghost()
+	_judge_control_direcition()#判断wasd所控制的方向
 	if Input.is_action_just_pressed("control_mouse_right_click"):
 		self.strength = self.strength + 1
 		print("plus strength!",strength)
@@ -35,9 +32,9 @@ func _physics_process(delta):
 		dodge(control_direction.normalized())
 	#print(wave_weapon_vector)
 	#print(wave_weapon_speed)
-	if weapon.is_controllable == true:
+	if has_weapon:
 		rotate_weapon((self.strength - weapon.weight) * 0.7, vector_weapon_to_mouse.normalized(), delta)
-	if weapon.type == "melee":
+	if has_weapon and weapon.type == "melee":
 		wave_weapon_vector = get_wave_weapon_vector()
 		wave_weapon_speed = get_wave_weapon_speed()
 		wave_weapon_direction = wave_weapon_vector.normalized()
@@ -92,7 +89,13 @@ func _smooth_control_move():#平滑 控制人物移动
 	self.linear_velocity = velocity
 	is_control_pressed = false
 
-func judge_control_direcition():#判断键盘wasd所控制的方向
+func _update_vector_of_player_mouse_weapon():
+	vector_player_to_mouse = get_global_mouse_position() - self.get_global_position()
+	if has_weapon:
+		vector_weapon_to_mouse = get_global_mouse_position() - weapon.get_global_position()
+		vector_player_to_weapon = weapon.get_global_position() - self.get_global_position()
+
+func _judge_control_direcition():#判断键盘wasd所控制的方向
 	if !Input.is_action_pressed("control_right") and !Input.is_action_pressed("control_left"):
 		control_direction.x = 0
 	if !Input.is_action_pressed("control_down") and !Input.is_action_pressed("control_up"):
@@ -138,16 +141,21 @@ func get_wave_weapon_speed():
 
 func _player_init():
 	self.add_to_group("player")
-	position = Vector2(70,310)
 	i_am_player()
 	tag = "player"
 	life = max_life
 	arm_length = 25
 
 func _player_weapon_init():
-	weapon = weaponScene.instance()
-	self.add_child(weapon)
-	weapon.tag = "player_weapon"
-	weapon.i_am_player_weapon()
-	weapon.linear_damp = clamp(self.strength - weapon.weight + 2, 12, 18)
-	weapon.angular_damp = clamp(self.strength  - weapon.weight - 1, 3, 10)
+	if weaponScene != null:
+		has_weapon = true
+		weapon = weaponScene.instance()
+		self.add_child(weapon)
+		weapon.tag = "player_weapon"
+		weapon.add_to_group("player_weapon")
+		weapon.i_am_player_weapon()
+		#weapon.linear_damp = clamp(self.strength - weapon.weight + 2, 12, 18)
+		#weapon.angular_damp = clamp(self.strength  - weapon.weight - 1, 3, 10)
+		total_weight = self.weight + weapon.weight#人物与武器总重
+	else:
+		has_weapon = false

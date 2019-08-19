@@ -2,7 +2,7 @@ extends "res://Scripts/Creatures/CreatureTemplate.gd"
 
 signal notice_player
 
-export(int) var alert_scope = 150
+export(int) var alert_distance = 150
 var attack_distance#攻击距离（武器长度加臂展）
 
 var has_noticed_player := false#是否注意到了player
@@ -20,13 +20,14 @@ var path = []
 var goal = Vector2()
 
 onready var sight_line = RayCast2D.new()#敌人视线（由自己指向player）（不是视野）
-onready var main = self.get_parent().get_parent().get_parent().get_parent().get_parent()
+onready var main = self.get_parent().get_parent().get_parent().get_parent()
 onready var player = main.get_node("Player")
-onready var nav = main.get_node("Navigation2D")
+onready var my_room = self.get_parent().get_parent()
+onready var nav = my_room.get_node_or_null("Navigation2D")
 
 func _ready():
+	preload("res://Scripts/Creatures/CreatureTemplate.gd")
 	#player.connect("move", self, "update_path")
-	self.add_to_group("enemies")#添加到组enemies中
 	_enemy_init()
 	_enemy_weapon_init()
 
@@ -35,7 +36,7 @@ func _physics_process(delta):
 	#player_position = arr[0].player_position
 	#print(player.global_position)
 	
-	if distance_self_to_player <= alert_scope:
+	if distance_self_to_player <= alert_distance:
 		sight_line.cast_to = player.global_position - self.global_position
 		sight_line.enabled = true
 	else:
@@ -64,7 +65,10 @@ func _physics_process(delta):
 	#update_path()
 
 func _update_path():
-	path = nav.get_simple_path(self.global_position, player.global_position, false)
+	var player_in_room_position = player.global_position - my_room.global_position
+	var self_in_room_position = self.position
+	path = nav.get_simple_path(self_in_room_position, player_in_room_position, false)
+	pass
 
 func ai_state_alert():
 	#sight_line.force_raycast_update()
@@ -77,7 +81,7 @@ func ai_state_notice():
 func ai_state_catch():
 	if player.linear_speed != Vector2():
 		_update_path()
-		print(path)
+		#print(path)
 	pass
 
 func ai_state_combat():
@@ -94,6 +98,7 @@ func ai_dodge(direction):
 
 func _enemy_init():
 	self.tag = "enemy"
+	self.add_to_group("enemies")#添加到组enemies中
 	i_am_enemy()
 	life = max_life
 	$LifeBar.max_value = self.max_life
@@ -103,7 +108,13 @@ func _enemy_init():
 	sight_line.set_collision_mask_bit(6,true)#检测墙体
 
 func _enemy_weapon_init():
-	weapon = weaponScene.instance()
-	self.add_child(weapon)
-	weapon.tag = "enemy_weapon"
-	weapon.i_am_enemy_weapon()
+	if weaponScene != null:
+		has_weapon = true
+		weapon = weaponScene.instance()
+		self.add_child(weapon)
+		weapon.add_to_group("enemy_weapon")
+		weapon.tag = "enemy_weapon"
+		weapon.i_am_enemy_weapon()
+		total_weight = self.weight + weapon.weight#人物与武器总重
+	else:
+		has_weapon = false

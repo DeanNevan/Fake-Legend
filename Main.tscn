@@ -19,73 +19,72 @@ smoothing_enabled = true
 smoothing_speed = 6.0
 
 [node name="Player" parent="." instance=ExtResource( 2 )]
+position = Vector2( -203.105, 66.6333 )
 weaponScene = ExtResource( 3 )
 
-[node name="Navigation2D" type="Navigation2D" parent="."]
+[node name="Room" type="Node" parent="."]
 
-[node name="Room" type="Node" parent="Navigation2D"]
-
-[node name="TestRoom1" parent="Navigation2D/Room" instance=ExtResource( 4 )]
+[node name="TestRoom1" parent="Room" instance=ExtResource( 4 )]
 position = Vector2( -0.291275, 0.238533 )
 
-[node name="Enemy" type="Node" parent="Navigation2D/Room/TestRoom1"]
+[node name="Enemy" type="Node" parent="Room/TestRoom1"]
 
-[node name="WhiteCross" parent="Navigation2D/Room/TestRoom1/Enemy" instance=ExtResource( 5 )]
+[node name="WhiteCrossBlock" parent="Room/TestRoom1/Enemy" instance=ExtResource( 5 )]
 position = Vector2( 108.999, 413 )
 script = ExtResource( 6 )
 weaponScene = ExtResource( 7 )
 
-[node name="WhiteCross8" parent="Navigation2D/Room/TestRoom1/Enemy" instance=ExtResource( 5 )]
+[node name="WhiteCrossBlock8" parent="Room/TestRoom1/Enemy" instance=ExtResource( 5 )]
 position = Vector2( 374, 270 )
 script = ExtResource( 6 )
 weaponScene = ExtResource( 7 )
 
-[node name="WhiteCross2" parent="Navigation2D/Room/TestRoom1/Enemy" instance=ExtResource( 5 )]
+[node name="WhiteCrossBlock2" parent="Room/TestRoom1/Enemy" instance=ExtResource( 5 )]
 position = Vector2( 383, 454 )
 script = ExtResource( 6 )
 weaponScene = ExtResource( 7 )
 
-[node name="WhiteCross3" parent="Navigation2D/Room/TestRoom1/Enemy" instance=ExtResource( 5 )]
+[node name="WhiteCrossBlock3" parent="Room/TestRoom1/Enemy" instance=ExtResource( 5 )]
 position = Vector2( 502, 428 )
 script = ExtResource( 6 )
 weaponScene = ExtResource( 7 )
 
-[node name="WhiteCross4" parent="Navigation2D/Room/TestRoom1/Enemy" instance=ExtResource( 5 )]
+[node name="WhiteCrossBlock4" parent="Room/TestRoom1/Enemy" instance=ExtResource( 5 )]
 position = Vector2( 232.65, 82.5932 )
 script = ExtResource( 6 )
 weaponScene = ExtResource( 7 )
 
-[node name="WhiteCross5" parent="Navigation2D/Room/TestRoom1/Enemy" instance=ExtResource( 5 )]
+[node name="WhiteCrossBlock5" parent="Room/TestRoom1/Enemy" instance=ExtResource( 5 )]
 position = Vector2( 278.042, 359.136 )
 script = ExtResource( 6 )
 weaponScene = ExtResource( 7 )
 
-[node name="WhiteCross6" parent="Navigation2D/Room/TestRoom1/Enemy" instance=ExtResource( 5 )]
+[node name="WhiteCrossBlock6" parent="Room/TestRoom1/Enemy" instance=ExtResource( 5 )]
 position = Vector2( 273.852, 176.171 )
 script = ExtResource( 6 )
 weaponScene = ExtResource( 7 )
 
-[node name="TestRoom2" parent="Navigation2D/Room" instance=ExtResource( 8 )]
+[node name="TestRoom2" parent="Room" instance=ExtResource( 8 )]
 position = Vector2( -308.813, 2.09502 )
 
-[node name="Enemy" type="Node" parent="Navigation2D/Room/TestRoom2"]
+[node name="Enemy" type="Node" parent="Room/TestRoom2"]
 
-[node name="WhiteCross7" parent="Navigation2D/Room/TestRoom2/Enemy" instance=ExtResource( 5 )]
+[node name="WhiteCrossBlock7" parent="Room/TestRoom2/Enemy" instance=ExtResource( 5 )]
 position = Vector2( -249.608, 61.9753 )
 script = ExtResource( 6 )
 weaponScene = ExtResource( 7 )
 
-[node name="WhiteCross8" parent="Navigation2D/Room/TestRoom2/Enemy" instance=ExtResource( 5 )]
+[node name="WhiteCrossBlock9" parent="Room/TestRoom2/Enemy" instance=ExtResource( 5 )]
 position = Vector2( -107.078, 272.699 )
 script = ExtResource( 6 )
 weaponScene = ExtResource( 7 )
 
-[node name="WhiteCross9" parent="Navigation2D/Room/TestRoom2/Enemy" instance=ExtResource( 5 )]
+[node name="WhiteCrossBlock10" parent="Room/TestRoom2/Enemy" instance=ExtResource( 5 )]
 position = Vector2( -260.889, 153.29 )
 script = ExtResource( 6 )
 weaponScene = ExtResource( 7 )
 
-[node name="WhiteCross10" parent="Navigation2D/Room/TestRoom2/Enemy" instance=ExtResource( 5 )]
+[node name="WhiteCrossBlock11" parent="Room/TestRoom2/Enemy" instance=ExtResource( 5 )]
 position = Vector2( -258.257, 223.392 )
 script = ExtResource( 6 )
 weaponScene = ExtResource( 7 )

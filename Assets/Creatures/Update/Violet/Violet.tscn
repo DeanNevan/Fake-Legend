@@ -1,24 +1,10 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://Scripts/Creatures/PlayerTemplate.gd" type="Script" id=1]
-[ext_resource path="res://Assets/Art/Creatures/Update/Violet/black_purple_idle.png" type="Texture" id=2]
-[ext_resource path="res://Assets/Art/Creatures/Update/Violet/black_purple_horizon.png" type="Texture" id=3]
+[ext_resource path="res://Assets/Creatures/Update/Violet/Art/VioletAnimatedSpriteFrames.tres" type="SpriteFrames" id=2]
 
 [sub_resource type="PhysicsMaterial" id=1]
 friction = 0.4
-
-[sub_resource type="SpriteFrames" id=2]
-animations = [ {
-"frames": [ ExtResource( 2 ) ],
-"loop": true,
-"name": "idle",
-"speed": 5.0
-}, {
-"frames": [ ExtResource( 3 ) ],
-"loop": true,
-"name": "horizon",
-"speed": 5.0
-} ]
 
 [sub_resource type="ConvexPolygonShape2D" id=3]
 points = PoolVector2Array( -7.5, -5, -5.5, -8, 5, -8, 7.5, -5.5, 7.5, 4, 2.5, 10.5, -2.5, 10.5, -6.5, 6, -7, 1, -7.5, -5 )
@@ -84,14 +70,14 @@ __meta__ = {
 }
 
 [node name="AnimatedSprite" type="AnimatedSprite" parent="."]
-position = Vector2( 0, -10 )
+position = Vector2( 0, -6 )
 scale = Vector2( 1.1, 0.9 )
-frames = SubResource( 2 )
+frames = ExtResource( 2 )
 animation = "horizon"
 playing = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2( 0, -10 )
+position = Vector2( 0, -6 )
 scale = Vector2( 1.1, 0.9 )
 shape = SubResource( 3 )
 
@@ -102,7 +88,7 @@ anims/breathe = SubResource( 4 )
 "anims/breathe 2" = SubResource( 4 )
 
 [node name="Margin" type="Path2D" parent="."]
-position = Vector2( 0, -10 )
+position = Vector2( 0, -6 )
 scale = Vector2( 1.1, 0.9 )
 curve = SubResource( 5 )
 
