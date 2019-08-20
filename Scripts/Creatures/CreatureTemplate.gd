@@ -170,6 +170,7 @@ func dodge(direction):#冲刺
 		ghost.restart()
 		ghost.visible = true
 		yield(get_tree().create_timer(dodge_time), "timeout")
+		self.velocity = Vector2()
 		ghost.visible = is_ghost_visible
 		#print("finish dodge")
 		body_capability["can_dodge"] = false
