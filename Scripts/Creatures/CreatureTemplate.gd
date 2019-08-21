@@ -3,10 +3,12 @@ extends RigidBody2D
 signal move
 
 #一些基本属性
-export(int) var max_speed = 60#最高速度
-export(int) var strength = 20
-export(int) var max_life = 100
-export(int) var max_stamina = 100
+var max_speed = 60#最高速度
+var strength = 10
+var max_life = 100
+var max_stamina = 100
+var arm_length = 0#臂展
+var alert_distance = 100
 export(PackedScene) var weaponScene
 
 var body_transform := Vector2()#用于记录子节点偏移量
@@ -16,8 +18,8 @@ var has_weapon
 var weapon_speed
 var stamina#精力
 var life#生命
-var arm_length#臂展
 var total_weight = 0#总重
+var attack_distance#攻击距离（武器长度加臂展）
 var alive = true# 是否存活
 
 #用于AnimatedSprite相关
@@ -241,6 +243,13 @@ func i_am_player():
 	self.set_collision_mask_bit(6, true)
 
 func _creature_init():
+	if self.has_node("Attributes"):
+		self.max_life = $Attributes.max_life
+		self.max_speed = $Attributes.max_speed
+		self.max_stamina = $Attributes.max_stamina
+		self.arm_length = $Attributes.arm_length
+		self.strength = $Attributes.strength
+		self.alert_distance = $Attributes.alert_distance
 	self.linear_damp = 0
 	self.angular_damp = 0
 	self.mode = RigidBody2D.MODE_CHARACTER

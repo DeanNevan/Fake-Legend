@@ -15,7 +15,6 @@ zoom = Vector2( 0.4, 0.4 )
 
 [node name="Player" parent="." instance=ExtResource( 2 )]
 position = Vector2( -160, 125.237 )
-max_speed = 90
 
 [node name="Room" type="Node" parent="."]
 
@@ -28,4 +27,8 @@ position = Vector2( -300.556, 0.286011 )
 position = Vector2( -230, 150 )
 mass = 1.22449
 script = ExtResource( 5 )
-alert_distance = 100
+
+[node name="WhiteCrossCore2" parent="Room/TestRoom1/Enemy" instance=ExtResource( 4 )]
+position = Vector2( -130, 270 )
+mass = 1.22449
+script = ExtResource( 5 )

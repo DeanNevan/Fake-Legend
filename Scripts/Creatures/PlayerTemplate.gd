@@ -65,20 +65,20 @@ func _smooth_control_move():#平滑 控制人物移动
 	var velocity_damp_direction = Vector2()
 	var velocity_damp_length = 0
 	if Input.is_action_pressed("control_right"):
-		velocity.x += clamp((strength - total_weight) / 2.0, 2, 15)
+		velocity.x += clamp((strength - total_weight) / 1.5, 2, 15)
 		is_control_pressed = true
 	if Input.is_action_pressed("control_left"):
-		velocity.x -= clamp((strength - total_weight) / 2.0, 2, 15)
+		velocity.x -= clamp((strength - total_weight) / 1.5, 2, 15)
 		is_control_pressed = true
 	if Input.is_action_pressed("control_down"):
-		velocity.y += clamp((strength - total_weight) / 2.0, 2, 15)
+		velocity.y += clamp((strength - total_weight) / 1.5, 2.5, 15)
 		is_control_pressed = true
 	if Input.is_action_pressed("control_up"):
-		velocity.y -= clamp((strength - total_weight) / 2.0, 2, 15)
+		velocity.y -= clamp((strength - total_weight) / 1.5, 2.5, 15)
 		is_control_pressed = true
 	if !is_control_pressed:#未按下control按键时 减速
 		velocity_damp_direction = (Vector2() - velocity).normalized()
-		velocity_damp_length = clamp((strength - total_weight) / 2.0, 2, 15)
+		velocity_damp_length = clamp((strength - total_weight) / 1.5, 2.5, 15)
 		velocity += velocity_damp_direction * velocity_damp_length
 		if velocity.length() <= 15:
 			velocity = Vector2()
@@ -144,7 +144,6 @@ func _player_init():
 	i_am_player()
 	tag = "player"
 	life = max_life
-	arm_length = 25
 
 func _player_weapon_init():
 	if weaponScene != null:
@@ -157,6 +156,8 @@ func _player_weapon_init():
 		#weapon.linear_damp = clamp(self.strength - weapon.weight + 2, 12, 18)
 		#weapon.angular_damp = clamp(self.strength  - weapon.weight - 1, 3, 10)
 		total_weight = self.weight + weapon.weight#人物与武器总重
+		self.attack_distance = self.arm_length + weapon.length
 	else:
 		has_weapon = false
 		total_weight = self.weight
+		self.attack_distance = self.arm_length
