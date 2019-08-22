@@ -67,6 +67,7 @@ var ago_position := Vector2()
 func _ready():
 	_creature_init()
 	_ghost_init()
+	#print(invincible_time)
 
 func _physics_process(delta):
 	pos2 = self.global_position
@@ -79,7 +80,8 @@ func rotate_weapon(speed, target_direction, delta):
 		return
 	if !has_weapon:
 		return
-	speed = clamp(speed, 2, 66)
+	speed = clamp(speed, 2, 15)
+	#print("rotate speed is",speed)
 	var present_direction = Vector2(1, 0).rotated(weapon.global_rotation)
 	weapon.global_rotation = present_direction.linear_interpolate(target_direction, speed * delta).angle()
 
@@ -94,6 +96,8 @@ func wave_weapon(direction, speed):
 	#weapon_speed_bonus = weapon_speed_bonus * 0.9
 	#if weapon_speed_bonus <=1:
 		#weapon_speed_bonus = 1
+	if speed <= 3:
+		return
 	weapon.linear_velocity += direction * speed * 0.8
 
 func get_damage(collision_point_linear_speed,collision_point_rotate_speed,weapon_damage,weapon_hit_tag:int,player_position):
@@ -102,7 +106,7 @@ func get_damage(collision_point_linear_speed,collision_point_rotate_speed,weapon
 		return
 	var judge_result = judge_whether_effective_damage(player_position)
 	#print(judge_result)
-	if judge_result and self.weapon.type == "melee":
+	if judge_result:
 		return
 	body_capability["invincible"] = true
 	InvincibleTimer.start()
@@ -111,11 +115,11 @@ func get_damage(collision_point_linear_speed,collision_point_rotate_speed,weapon
 		return
 	#print(collision_point_linear_speed)
 	#print(self.linear_speed)
-	var damage = (collision_point_linear_speed - self.linear_speed).length() + abs(collision_point_rotate_speed / 2) + weapon_damage + weapon_hit_tag*2
+	var damage = collision_point_linear_speed.length() + abs(collision_point_rotate_speed / 2) + weapon_damage + weapon_hit_tag*2
 	print("cause damage",damage)
 	life -= damage# 减少生命值
 	update_LifeBar()#更新生命条
-	lose_control(InvincibleTimer.wait_time / 2.0)#失去控制（受击后的硬直）
+	lose_control(invincible_time / 2.0)#失去控制（受击后的硬直）
 	if life <= 0:
 		life = 0
 		$CollisionShape2D.disabled = true	# 碰撞不可用
@@ -125,9 +129,9 @@ func get_damage(collision_point_linear_speed,collision_point_rotate_speed,weapon
 
 func update_LifeBar():
 	if self.tag == "enemy":
-		$LifeBar.value = (float(life) / max_life) * 100
+		$LifeBar.value = life
 	else:
-		return
+		pass
 
 func judge_whether_effective_damage(target_position):
 	raycast.enabled = true
@@ -147,7 +151,7 @@ func judge_whether_effective_damage(target_position):
 		return false
 
 func lose_control(time):
-	print("lose control",invincible_time)
+	print("lose control")
 	body_capability["controllable"] = false
 	yield(get_tree().create_timer(time),"timeout")
 	body_capability["controllable"] = true
@@ -160,24 +164,6 @@ func _on_InvincibleTimer_timeout():
 func _on_DodgeCooldownTimer_timeout():
 	#print("i can dodge now")
 	body_capability["can_dodge"] = true
-
-func dodge(direction):#冲刺
-	if body_capability["can_dodge"] == true and body_capability["controllable"] == true:
-		body_capability["controllable"] = false
-		var dodge_velocity_bonus = direction * (max_speed / 2) * clamp(self.strength / 2.0, 1, 20)
-		#print("dodging")
-		if has_weapon:
-			weapon.linear_velocity = dodge_velocity_bonus
-		self.linear_velocity = dodge_velocity_bonus
-		ghost.restart()
-		ghost.visible = true
-		yield(get_tree().create_timer(dodge_time), "timeout")
-		self.velocity = Vector2()
-		ghost.visible = is_ghost_visible
-		#print("finish dodge")
-		body_capability["can_dodge"] = false
-		body_capability["controllable"] = true
-		DodgeCooldownTimer.start()
 
 func _get_ago_position():
 	if _update_ago_position:
@@ -267,12 +253,6 @@ func _creature_init():
 	raycast = RayCast2D.new()
 	add_child(raycast)
 	raycast.set_collision_mask_bit(0,false)
-	#冲刺&闪避方法相关#
-	DodgeCooldownTimer = Timer.new()
-	add_child(DodgeCooldownTimer)
-	DodgeCooldownTimer.one_shot = true
-	DodgeCooldownTimer.wait_time = 1.5
-	DodgeCooldownTimer.connect("timeout", self, "_on_DodgeCooldownTimer_timeout")
 	#无敌状态相关#
 	invincible_time = 15.0 / strength
 	InvincibleTimer = Timer.new()

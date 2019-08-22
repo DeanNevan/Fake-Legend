@@ -20,7 +20,7 @@ var rot1 = self.global_rotation
 var rot2 = self.global_rotation
 var rotate_speed : float = rot2 - rot1
 
-
+var is_stuck:= false
 var is_controllable = true
 onready var margin = $Margin
 
@@ -48,6 +48,8 @@ func _on_Weapon_body_entered(body,weapon_linear_speed:Vector2,weapon_damage:floa
 	if (self.tag == "player_weapon" and body.tag == "enemy") or (self.tag == "enemy_weapon" and body.tag == "player") or self.tag == "weapon":
 		pass
 		#print("!!!!!!!!!!!")
+	elif self.type != "melee":
+		return
 	else:
 		return
 	#emit_signal("hit_body",body.global_position)

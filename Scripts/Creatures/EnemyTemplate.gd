@@ -2,16 +2,16 @@ extends "res://Scripts/Creatures/CreatureTemplate.gd"
 
 signal notice_player
 
-var has_noticed_player := false#是否注意到了player
-var is_catching_player := false#是否在追逐player
-var is_searching_player := false#是否在搜寻player
-var is_in_combat := false#是否处于战斗中
-
 var ai_state := "unaware"#unaware,noticed,catching,combating,searching
 var combat_mode : String#far（远距离攻击）, front（正面攻击）, back（周旋&绕后攻击）
 
+var attack_probability = 0.015#战斗状态中的攻击概率
+
+var is_attacking := false
+var is_striking := false
+
 var vector_self_to_player := Vector2()
-var distance_self_to_player := 1000.0
+var distance_self_to_player := 100000.0
 var is_player_in_alert_range := false
 
 var path = []
@@ -36,7 +36,8 @@ func _ready():
 	_enemy_init()
 	_enemy_weapon_init()
 	_judge_combat_mode()
-	print(combat_mode)
+	#print(combat_mode)
+	#print(invincible_time)
 
 func _physics_process(delta):
 	#var arr = get_tree().get_nodes_in_group("enemies")
@@ -112,6 +113,12 @@ func ai_state_combat():
 	if distance_self_to_player > (attack_distance + alert_distance / 2):
 		ai_state = "catching"
 	
+	if !is_attacking and (randf() <= attack_probability):#如果不正在攻击，则 判断攻击方式
+		if !self.has_weapon:#如果没有武器
+			ai_strike(vector_self_to_player.normalized(), self.max_speed * 2)
+			print("strike!!!!!!!!!")
+		if self.has_weapon:
+			pass#做一些武器动作
 
 func ai_state_search():
 	if !sight_line.is_colliding() and is_player_in_alert_range == true:
@@ -124,6 +131,32 @@ func ai_state_search():
 		#做一些其他的search行为
 		pass
 	pass
+
+func ai_combat_front():
+	pass
+
+func ai_combat_back():
+	pass
+
+func ai_combat_ranged():
+	pass
+
+func ai_strike(direction, speed, time = 1):
+	is_attacking = true
+	is_striking = true
+	self.contact_monitor = true
+	
+	var timer = Timer.new()
+	add_child(timer)
+	timer.one_shot = true
+	timer.wait_time = time
+	timer.start()
+	self.linear_velocity = direction * speed
+	yield(get_tree().create_timer(time), "timeout")
+	self.linear_velocity = Vector2()
+	is_attacking = false
+	is_striking = false
+	self.contact_monitor = false
 
 func ai_move(direction, max_speed):
 	move_speed += clamp((strength - total_weight) / 1.5, 2.5, 15)
@@ -171,10 +204,17 @@ func _judge_combat_mode():
 		else:
 			self.combat_mode = "front"
 
+func _strike_sth(body):
+	print("!!!!!!!!!!!!")
+	print(body.tag)
+
 func _enemy_init():
 	self.tag = "enemy"
 	self.add_to_group("enemies")#添加到组enemies中
 	i_am_enemy()
+	self.connect("body_entered", self, "strike_sth")
+	self.contacts_reported = 8
+	
 	life = max_life
 	$LifeBar.max_value = self.max_life
 	$LifeBar.value = self.life
