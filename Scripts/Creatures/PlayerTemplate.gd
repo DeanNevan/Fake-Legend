@@ -46,7 +46,7 @@ func _physics_process(delta):
 			weapon.is_stuck = true
 		else:
 			weapon.is_stuck = false
-	print(weapon.is_stuck)
+	print(self.linear_velocity)
 
 func _input(event):
 	pass
@@ -70,32 +70,33 @@ func _basic_control_move(speed):#基础 控制人物移动
 	is_control_pressed = false
 
 func _smooth_control_move():#平滑 控制人物移动
-	if weapon.is_stuck and self.has_weapon:#如果武器卡住了，玩家只能向着减少与武器距离的方向移动
-		if ((self.global_position + velocity.normalized()) - weapon.global_position).length() > vector_player_to_weapon.length():
-			velocity = Vector2()
-			print("yoho")
-			return
 	var velocity_damp_direction = Vector2()
 	var velocity_damp_length = 0
 	if Input.is_action_pressed("control_right"):
-		velocity.x += clamp((strength - total_weight) / 1.5, 2, 15)
+		velocity.x += clamp((strength - total_weight) / 1, 3, 15)
 		is_control_pressed = true
 	if Input.is_action_pressed("control_left"):
-		velocity.x -= clamp((strength - total_weight) / 1.5, 2, 15)
+		velocity.x -= clamp((strength - total_weight) / 1, 3, 15)
 		is_control_pressed = true
 	if Input.is_action_pressed("control_down"):
-		velocity.y += clamp((strength - total_weight) / 1.5, 2.5, 15)
+		velocity.y += clamp((strength - total_weight) / 1, 3, 15)
 		is_control_pressed = true
 	if Input.is_action_pressed("control_up"):
-		velocity.y -= clamp((strength - total_weight) / 1.5, 2.5, 15)
+		velocity.y -= clamp((strength - total_weight) / 1, 3, 15)
 		is_control_pressed = true
 	if !is_control_pressed:#未按下control按键时 减速
 		velocity_damp_direction = (Vector2() - velocity).normalized()
-		velocity_damp_length = clamp((strength - total_weight) / 1.5, 2.5, 15)
+		velocity_damp_length = clamp((strength - total_weight) / 1, 2.5, 15)
 		velocity += velocity_damp_direction * velocity_damp_length
 		if velocity.length() <= 15:
 			velocity = Vector2()
 	is_control_pressed = false
+	if self.has_weapon:#如果武器卡住了，玩家只能向着减少与武器距离的方向移动
+		if self.weapon.is_stuck:
+			if ((self.global_position + velocity.normalized()) - weapon.global_position).length() > vector_player_to_weapon.length():
+				velocity = Vector2()
+				self.linear_velocity = velocity
+				return
 	if velocity.length() > max_speed:
 		velocity = velocity.normalized() * max_speed
 	else:
@@ -150,7 +151,7 @@ func get_wave_weapon_speed():
 	return speed
 
 func dodge(direction):#冲刺
-	if body_capability["can_dodge"] == true and body_capability["controllable"] == true:
+	if body_capability["can_dodge"] == true and body_capability["controllable"] == true and !weapon.is_stuck:
 		body_capability["controllable"] = false
 		is_dodging = true
 		var dodge_velocity_bonus = direction * (max_speed / 2) * clamp(self.strength / 2.0, 1, 20)

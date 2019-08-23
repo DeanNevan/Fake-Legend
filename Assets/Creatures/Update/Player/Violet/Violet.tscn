@@ -1,8 +1,7 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=7 format=2]
 
-[ext_resource path="res://Scripts/Creatures/PlayerTemplate.gd" type="Script" id=1]
-[ext_resource path="res://Assets/Creatures/Update/Violet/Art/VioletAnimatedSpriteFrames.tres" type="SpriteFrames" id=2]
-[ext_resource path="res://Assets/Creatures/Update/Violet/Attributes.gd" type="Script" id=3]
+[ext_resource path="res://Assets/Creatures/Update/Player/Violet/Violet.gd" type="Script" id=1]
+[ext_resource path="res://Assets/Creatures/Update/Player/Violet/Art/VioletAnimatedSpriteFrames.tres" type="SpriteFrames" id=2]
 
 [sub_resource type="PhysicsMaterial" id=1]
 friction = 0.4
@@ -93,6 +92,3 @@ scale = Vector2( 1.1, 0.9 )
 curve = SubResource( 4 )
 
 [node name="Abilities" type="Node" parent="."]
-
-[node name="Attributes" type="Node" parent="."]
-script = ExtResource( 3 )

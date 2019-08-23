@@ -229,13 +229,6 @@ func i_am_player():
 	self.set_collision_mask_bit(6, true)
 
 func _creature_init():
-	if self.has_node("Attributes"):
-		self.max_life = $Attributes.max_life
-		self.max_speed = $Attributes.max_speed
-		self.max_stamina = $Attributes.max_stamina
-		self.arm_length = $Attributes.arm_length
-		self.strength = $Attributes.strength
-		self.alert_distance = $Attributes.alert_distance
 	self.linear_damp = 0
 	self.angular_damp = 0
 	self.mode = RigidBody2D.MODE_CHARACTER

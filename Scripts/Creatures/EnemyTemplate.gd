@@ -4,11 +4,15 @@ signal notice_player
 
 var ai_state := "unaware"#unaware,noticed,catching,combating,searching
 var combat_mode : String#far（远距离攻击）, front（正面攻击）, back（周旋&绕后攻击）
+var combat_position := Vector2()
 
-var attack_probability = 0.015#战斗状态中的攻击概率
+var attack_probability = 0.016#战斗状态中的攻击概率
+#var ai_combat_move_probability = 0.015
 
+var is_ai_combat_moving := false
 var is_attacking := false
 var is_striking := false
+var strike_distance = 30
 
 var vector_self_to_player := Vector2()
 var distance_self_to_player := 100000.0
@@ -40,6 +44,7 @@ func _ready():
 	#print(invincible_time)
 
 func _physics_process(delta):
+	update()
 	#var arr = get_tree().get_nodes_in_group("enemies")
 	#player_position = arr[0].player_position
 	#print(player.global_position)
@@ -60,18 +65,18 @@ func _physics_process(delta):
 	distance_self_to_player = vector_self_to_player.length()
 	
 	match ai_state:
-		"unaware":
+		"unaware": 						#(•ิ_•ิ)
 			ai_state_alert()
-		"noticing":
+		"noticing":						#(..•˘_˘•..)
 			ai_state_notice()
 			emit_signal("notice_player")
-		"catching":
+		"catching":	    				#┌(;￣◇￣)┘
 			ai_state_catch()
 			emit_signal("notice_player")
-		"combating":
+		"combating":					#(ง •̀_•́)ง
 			ai_state_combat()
 			emit_signal("notice_player")
-		"searching":
+		"searching":					#◔_‸◔？
 			ai_state_search()
 	#print(ai_state)
 #func set_nav(new_nav):
@@ -85,6 +90,7 @@ func _draw():
 		#print(path[i-1])
 		#print(path[i])
 		#print(self.position)
+		draw_circle(combat_position - self.global_position, 5, Color.black)
 		draw_line(path[i-1] - self_in_room_position, path[i] - self_in_room_position, Color.darkred, 4)
 
 func ai_state_alert():
@@ -110,10 +116,21 @@ func ai_state_catch():
 	pass
 
 func ai_state_combat():
-	if distance_self_to_player > (attack_distance + alert_distance / 2):
+	if distance_self_to_player > attack_distance * 1.8:
 		ai_state = "catching"
 	
-	if !is_attacking and (randf() <= attack_probability):#如果不正在攻击，则 判断攻击方式
+	if !is_attacking and body_capability["controllable"] == true:
+		match self.combat_mode:
+			"front":
+				ai_combat_move_front()
+			"back":
+				ai_combat_move_back()
+			"ranged":
+				ai_combat_move_ranged()
+	
+	if !is_attacking and (randf() <= attack_probability) and body_capability["controllable"] == true:#如果不正在攻击，则 判断攻击方式
+		is_attacking = true
+		is_ai_combat_moving = false
 		if !self.has_weapon:#如果没有武器
 			ai_strike(vector_self_to_player.normalized(), self.max_speed * 2)
 			print("strike!!!!!!!!!")
@@ -124,7 +141,7 @@ func ai_state_search():
 	if !sight_line.is_colliding() and is_player_in_alert_range == true:
 		ai_state = "noticing"
 		return
-	if ((player_disapear_global_position - my_room.global_position) - self_in_room_position).length() > 5:#如果玩家消失位置离自己大于1像素，则朝玩家消失为止搜索
+	if ((player_disapear_global_position - my_room.global_position) - self_in_room_position).length() > 15:#如果玩家消失位置离自己大于15像素，则朝玩家消失为止搜索
 		ai_search(player_disapear_global_position - my_room.global_position)
 	else:
 		ai_stop_move()
@@ -132,46 +149,54 @@ func ai_state_search():
 		pass
 	pass
 
-func ai_combat_front():
+func ai_combat_move_front():
+	combat_position = player.global_position + (self.global_position - player.global_position).normalized() * attack_distance * 1
+	print(combat_position)
+	if (combat_position - self.global_position).length() > attack_distance / 5.0:
+		ai_move(combat_position - self.global_position, max_speed / 2)
+	else:
+		ai_stop_move()
+	#var velocity_direction = ().normalized()
+
+func ai_combat_move_back():
 	pass
 
-func ai_combat_back():
-	pass
-
-func ai_combat_ranged():
+func ai_combat_move_ranged():
 	pass
 
 func ai_strike(direction, speed, time = 1):
-	is_attacking = true
 	is_striking = true
 	self.contact_monitor = true
-	
-	var timer = Timer.new()
-	add_child(timer)
-	timer.one_shot = true
-	timer.wait_time = time
-	timer.start()
+	self.linear_velocity = - direction * 9
+	yield(get_tree().create_timer(0.5), "timeout")
+	self.linear_velocity = Vector2()
+	yield(get_tree().create_timer(0.3), "timeout")
 	self.linear_velocity = direction * speed
 	yield(get_tree().create_timer(time), "timeout")
 	self.linear_velocity = Vector2()
-	is_attacking = false
 	is_striking = false
+	is_attacking = false
 	self.contact_monitor = false
 
 func ai_move(direction, max_speed):
-	move_speed += clamp((strength - total_weight) / 1.5, 2.5, 15)
-	move_speed = clamp(move_speed, 0, max_speed)
-	self.linear_velocity = direction.normalized() * move_speed
+	move_speed = clamp((strength - total_weight) / 1, 3, 15)
+	velocity += direction * move_speed
+	if velocity.length() <= max_speed:
+		pass
+	else:
+		velocity = velocity.normalized() * max_speed
+	self.linear_velocity = velocity
 
 func ai_stop_move():
-	move_speed -= clamp((strength - total_weight) / 1.5, 2.5, 15)
-	move_speed = clamp(move_speed, 0, max_speed)
-	self.linear_velocity = self.linear_velocity.normalized() * move_speed
+	if self.linear_velocity.length() <= 4:
+		self.linear_velocity = Vector2()
+		return
+	move_speed = clamp((strength - total_weight) / 1, 3, 15)
+	self.linear_velocity += - self.linear_velocity.normalized() * move_speed
 
 func ai_search(target_position):
 	path = nav.get_simple_path(self_in_room_position, target_position, true)
 	_get_move_vector()
-	update()
 	ai_move(move_vector.normalized(), max_speed)
 
 func ai_dodge(direction):
@@ -180,7 +205,6 @@ func ai_dodge(direction):
 func _update_path():
 	sight_line.force_raycast_update()
 	path = nav.get_simple_path(self_in_room_position, player_in_room_position, true)
-	update()
 	#print(path)
 
 func _get_move_vector():
@@ -191,6 +215,9 @@ func _get_move_vector():
 	#print(move_vector)
 
 func _judge_combat_mode():
+	if self.weight >= 22:
+		self.combat_mode = "still"
+		return
 	if weaponScene != null:
 		if weapon.type == "ranged" or weapon.type == "magic":
 			self.combat_mode = "far"
@@ -239,5 +266,5 @@ func _enemy_weapon_init():
 	else:
 		has_weapon = false
 		total_weight = self.weight
-		self.attack_distance = self.arm_length
+		self.attack_distance = self.arm_length + strike_distance
 		#print(attack_distance)
