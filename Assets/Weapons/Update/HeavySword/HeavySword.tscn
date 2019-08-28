@@ -2,7 +2,7 @@
 
 [ext_resource path="res://Assets/Art/Weapons/Update/HeavySword/heavy_steel_sword.png" type="Texture" id=1]
 
-[sub_resource type="GDScript" id=6]
+[sub_resource type="GDScript" id=1]
 script/source = "extends \"res://Scripts/Weapons/WeaponTemplate.gd\"
 
 # Declare member variables here. Examples:
@@ -23,72 +23,75 @@ func _on_SharpArea_body_entered(body, weapon_hit_type):
 func _on_ObtuseArea_body_entered(body, weapon_hit_type):
 	_on_Weapon_body_entered(body,self.linear_speed,self.damage,weapon_hit_type)"
 
-[sub_resource type="ConvexPolygonShape2D" id=1]
-points = PoolVector2Array( -13, -4.5, 33, -4.5, 37.5, 0, 33, 4.5, -13, 4.5 )
-
-[sub_resource type="RectangleShape2D" id=2]
-extents = Vector2( 2, 7.5 )
+[sub_resource type="ConvexPolygonShape2D" id=2]
+points = PoolVector2Array( 9, -3.5, 43, -3.5, 46, 0, 43, 3.5, 9, 3.5 )
 
 [sub_resource type="RectangleShape2D" id=3]
-extents = Vector2( 7.5, 2.5 )
+extents = Vector2( 1.5, 5.7 )
 
 [sub_resource type="RectangleShape2D" id=4]
-extents = Vector2( 2, 3.5 )
+extents = Vector2( 5.5, 1.9 )
 
-[sub_resource type="Curve2D" id=5]
-bake_interval = 1.0
+[sub_resource type="RectangleShape2D" id=5]
+extents = Vector2( 1.5, 2.8 )
+
+[sub_resource type="Curve2D" id=6]
+bake_interval = 2.0
 _data = {
-"points": PoolVector2Array( 0, 0, 0, 0, -37.0266, -2.54135, 0, 0, 0, 0, -35.9971, -3.47435, 0, 0, 0, 0, -33.0372, -3.47435, 0, 0, 0, 0, -33.0372, -2.6057, 0, 0, 0, 0, -18.045, -2.6057, 0, 0, 0, 0, -18.0128, -7.46371, 0, 0, 0, 0, -14.0234, -7.52805, 0, 0, 0, 0, -12.9617, -4.47169, 0, 0, 0, 0, 32.9613, -4.50009, 0, 0, 0, 0, 37.4882, -0.030508, 0, 0, 0, 0, 33.0338, 4.54267, 0, 0, 0, 0, -13.0076, 4.5108, 0, 0, 0, 0, -14.0286, 7.458, 0, 0, 0, 0, -18.0159, 7.49653, 0, 0, 0, 0, -18.0279, 2.5017, 0, 0, 0, 0, -33.0114, 2.53738, 0, 0, 0, 0, -33.0288, 3.51092, 0, 0, 0, 0, -35.9943, 3.53305, 0, 0, 0, 0, -37.028, 2.48522, 0, 0, 0, 0, -37.0421, -2.54153 )
+"points": PoolVector2Array( 0, 0, 0, 0, -36.679, -2.77797, 0, 0, 0, 0, -33.7305, -2.68583, 0, 0, 0, 0, -22.6277, -2.13299, 0, 0, 0, 0, -22.4895, -5.72643, 0, 0, 0, 0, -19.6332, -5.81857, 0, 0, 0, 0, -18.0668, -3.51508, 0, 0, 0, 0, 16.0249, -3.56115, 0, 0, 0, 0, 18.9272, -0.0598469, 0, 0, 0, 0, 15.9327, 3.44146, 0, 0, 0, 0, -18.0207, 3.30325, 0, 0, 0, 0, -19.5871, 5.56067, 0, 0, 0, 0, -22.5816, 5.60674, 0, 0, 0, 0, -22.6277, 1.87508, 0, 0, 0, 0, -33.6845, 1.82901, 0, 0, 0, 0, -33.8687, 2.65827, 0, 0, 0, 0, -36.7711, 2.65827, 0, 0, 0, 0, -36.6329, -2.82403 )
 }
 
 [node name="HeavySword" type="RigidBody2D"]
+collision_layer = 0
+collision_mask = 0
 mass = 2.55102
 gravity_scale = 0.0
-script = SubResource( 6 )
+script = SubResource( 1 )
 
 [node name="Sprite" type="Sprite" parent="."]
-position = Vector2( 27.0421, 0 )
+scale = Vector2( 0.75, 0.75 )
 texture = ExtResource( 1 )
+offset = Vector2( 24, 0 )
 
 [node name="SharpArea1" type="CollisionShape2D" parent="."]
-position = Vector2( 27.0421, 0 )
-shape = SubResource( 1 )
-
-[node name="ObtuseArea1" type="CollisionShape2D" parent="."]
-position = Vector2( 11.0421, 0 )
 shape = SubResource( 2 )
 
-[node name="ObtuseArea2" type="CollisionShape2D" parent="."]
-position = Vector2( 1.54215, 0 )
+[node name="ObtuseArea1" type="CollisionShape2D" parent="."]
+position = Vector2( 6, 0 )
 shape = SubResource( 3 )
 
-[node name="ObtuseArea3" type="CollisionShape2D" parent="."]
-position = Vector2( -7.95785, 0 )
+[node name="ObtuseArea2" type="CollisionShape2D" parent="."]
+position = Vector2( -1, 0 )
 shape = SubResource( 4 )
+
+[node name="ObtuseArea3" type="CollisionShape2D" parent="."]
+position = Vector2( -8.2, 0 )
+shape = SubResource( 5 )
 
 [node name="SharpArea" type="Area2D" parent="."]
 position = Vector2( 27.0421, 0 )
 
 [node name="SharpArea2" type="CollisionShape2D" parent="SharpArea"]
-shape = SubResource( 1 )
+position = Vector2( -27.0421, 0 )
+shape = SubResource( 2 )
 
 [node name="ObtuseArea" type="Area2D" parent="."]
 position = Vector2( 27.0421, 0 )
 
 [node name="ObtuseArea5" type="CollisionShape2D" parent="ObtuseArea"]
-position = Vector2( -16, 0 )
-shape = SubResource( 2 )
-
-[node name="ObtuseArea4" type="CollisionShape2D" parent="ObtuseArea"]
-position = Vector2( -25.5, 0 )
+position = Vector2( -21.0421, 0 )
 shape = SubResource( 3 )
 
 [node name="ObtuseArea6" type="CollisionShape2D" parent="ObtuseArea"]
-position = Vector2( -35, 0 )
+position = Vector2( -28.0421, 0 )
 shape = SubResource( 4 )
+
+[node name="ObtuseArea4" type="CollisionShape2D" parent="ObtuseArea"]
+position = Vector2( -35.2421, 0 )
+shape = SubResource( 5 )
 
 [node name="Margin" type="Path2D" parent="."]
 position = Vector2( 27.0421, 0 )
-curve = SubResource( 5 )
+curve = SubResource( 6 )
 [connection signal="body_entered" from="SharpArea" to="." method="_on_SharpArea_body_entered" binds= [ "sharp" ]]
 [connection signal="body_entered" from="ObtuseArea" to="." method="_on_ObtuseArea_body_entered" binds= [ "obtuse" ]]

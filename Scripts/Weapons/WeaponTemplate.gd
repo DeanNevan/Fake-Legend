@@ -35,7 +35,6 @@ func _process(delta):
 	pos1 = pos2
 	#print(self.angular_velocity)
 	#print(self.linear_speed)
-	
 	rot2 = self.global_rotation
 	self.rotate_speed = rot2 - rot1
 	rot1 = rot2
@@ -86,6 +85,7 @@ func _on_Weapon_body_entered(body,weapon_linear_speed:Vector2,weapon_damage:floa
 
 func i_am_player_weapon():
 	clear_collision_bit(self)
+	self.angular_damp = 8
 	self.tag = "player_weapon"
 	self.set_collision_mask_bit(1,true)
 	self.set_collision_mask_bit(3,true)
@@ -111,6 +111,7 @@ func i_am_player_weapon():
 
 func i_am_enemy_weapon():
 	clear_collision_bit(self)
+	self.angular_damp = 8
 	self.tag = "enemy_weapon"
 	self.set_collision_mask_bit(0,true)
 	self.set_collision_mask_bit(2,true)

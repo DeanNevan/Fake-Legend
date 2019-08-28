@@ -10,9 +10,8 @@ var attack_probability = 0.016#战斗状态中的攻击概率
 #var ai_combat_move_probability = 0.015
 
 var is_ai_combat_moving := false
-var is_attacking := false
-var is_striking := false
-var strike_distance = 30
+
+var _prepare_weapon := true
 
 var vector_self_to_player := Vector2()
 var distance_self_to_player := 100000.0
@@ -24,6 +23,9 @@ var goal = Vector2()
 var move_vector := Vector2()
 var move_speed = 0
 
+var target_vector = Vector2()
+var ang
+
 var player_disapear_global_position := Vector2()
 var player_in_room_position := Vector2()
 var self_in_room_position := Vector2()
@@ -33,6 +35,7 @@ onready var main = self.get_parent().get_parent().get_parent().get_parent()
 onready var player = main.get_node("Player")
 onready var my_room = self.get_parent().get_parent()
 onready var nav = my_room.get_node_or_null("Navigation2D")
+onready var abilities = $Abilities
 
 func _ready():
 	preload("res://Scripts/Creatures/CreatureTemplate.gd")
@@ -78,6 +81,8 @@ func _physics_process(delta):
 			emit_signal("notice_player")
 		"searching":					#◔_‸◔？
 			ai_state_search()
+	
+	ai_update_weapon_position_and_rotation()
 	#print(ai_state)
 #func set_nav(new_nav):
 	#nav = new_nav
@@ -119,7 +124,9 @@ func ai_state_combat():
 	if distance_self_to_player > attack_distance * 1.8:
 		ai_state = "catching"
 	
-	if !is_attacking and body_capability["controllable"] == true:
+	abilities.launch_abilities()
+	
+	if !is_moving_self_with_ability and body_capability["moveable"] == true:
 		match self.combat_mode:
 			"front":
 				ai_combat_move_front()
@@ -127,15 +134,6 @@ func ai_state_combat():
 				ai_combat_move_back()
 			"ranged":
 				ai_combat_move_ranged()
-	
-	if !is_attacking and (randf() <= attack_probability) and body_capability["controllable"] == true:#如果不正在攻击，则 判断攻击方式
-		is_attacking = true
-		is_ai_combat_moving = false
-		if !self.has_weapon:#如果没有武器
-			ai_strike(vector_self_to_player.normalized(), self.max_speed * 2)
-			print("strike!!!!!!!!!")
-		if self.has_weapon:
-			pass#做一些武器动作
 
 func ai_state_search():
 	if !sight_line.is_colliding() and is_player_in_alert_range == true:
@@ -151,8 +149,8 @@ func ai_state_search():
 
 func ai_combat_move_front():
 	combat_position = player.global_position + (self.global_position - player.global_position).normalized() * attack_distance * 1
-	print(combat_position)
-	if (combat_position - self.global_position).length() > attack_distance / 5.0:
+	#print(combat_position)
+	if (combat_position - self.global_position).length() > attack_distance / 4.0:
 		ai_move(combat_position - self.global_position, max_speed / 2)
 	else:
 		ai_stop_move()
@@ -164,21 +162,31 @@ func ai_combat_move_back():
 func ai_combat_move_ranged():
 	pass
 
-func ai_strike(direction, speed, time = 1):
-	is_striking = true
-	self.contact_monitor = true
-	self.linear_velocity = - direction * 9
-	yield(get_tree().create_timer(0.5), "timeout")
-	self.linear_velocity = Vector2()
-	yield(get_tree().create_timer(0.3), "timeout")
-	self.linear_velocity = direction * speed
-	yield(get_tree().create_timer(time), "timeout")
-	self.linear_velocity = Vector2()
-	is_striking = false
-	is_attacking = false
-	self.contact_monitor = false
+func ai_update_weapon_position_and_rotation():
+	if !is_moving_weapon_with_ability and self.has_weapon:
+		if (weapon.global_position - global_position).length() > 3:
+			var del = clamp(strength - weapon.weight, 3, 20)
+			var speed = del * 1.2 + weapon.position.length() * 1.2
+			wave_weapon(global_position - weapon.global_position, speed)
+		if _prepare_weapon:
+			_prepare_weapon = false
+			if ai_state == "catching" or ai_state == "combating":
+				if weapon.type == "melee":
+					ang = vector_self_to_player.angle() + rand_range(- PI / 4, PI / 4)
+					target_vector = Vector2(cos(ang), sin(ang))
+				else:
+					ang = vector_self_to_player.angle()
+					target_vector = vector_self_to_player
+			else:
+				ang = rand_range(- PI, PI)
+				target_vector = Vector2(cos(ang), sin(ang))
+			yield(get_tree().create_timer(1.5), "timeout")#每过1.5秒 瞄准玩家 或 随即转动一下武器位置
+			_prepare_weapon = true
+		rotate_weapon((strength - weapon.weight) * 0.7, target_vector, get_physics_process_delta_time())
 
 func ai_move(direction, max_speed):
+	if body_capability["moveable"] == false:
+		return
 	move_speed = clamp((strength - total_weight) / 1, 3, 15)
 	velocity += direction * move_speed
 	if velocity.length() <= max_speed:
@@ -231,15 +239,10 @@ func _judge_combat_mode():
 		else:
 			self.combat_mode = "front"
 
-func _strike_sth(body):
-	print("!!!!!!!!!!!!")
-	print(body.tag)
-
 func _enemy_init():
 	self.tag = "enemy"
 	self.add_to_group("enemies")#添加到组enemies中
 	i_am_enemy()
-	self.connect("body_entered", self, "strike_sth")
 	self.contacts_reported = 8
 	
 	life = max_life
@@ -266,5 +269,5 @@ func _enemy_weapon_init():
 	else:
 		has_weapon = false
 		total_weight = self.weight
-		self.attack_distance = self.arm_length + strike_distance
+		self.attack_distance = self.arm_length + 45
 		#print(attack_distance)

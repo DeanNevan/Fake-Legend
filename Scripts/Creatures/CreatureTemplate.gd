@@ -36,7 +36,7 @@ var wave_weapon_vector := Vector2()
 var wave_weapon_speed = 0
 var wave_weapon_direction := Vector2()
 
-var body_capability := {"invincible" : false, "controllable" : true, "can_dodge" : true}
+var body_capability := {"invincible" : false, "moveable" : true, "can_dodge" : true}
 
 var pos1 = self.global_position
 var pos2 = self.global_position
@@ -63,6 +63,9 @@ var is_ghost_emitting := false#一开始残影不释放
 var _update_ago_position := false
 var _update_ago_position_time = dodge_time / 2
 var ago_position := Vector2()
+
+var is_moving_self_with_ability := false
+var is_moving_weapon_with_ability := false
 
 func _ready():
 	_creature_init()
@@ -98,6 +101,7 @@ func wave_weapon(direction, speed):
 		#weapon_speed_bonus = 1
 	if speed <= 3:
 		return
+	direction = direction.normalized()
 	weapon.linear_velocity += direction * speed * 0.8
 
 func get_damage(collision_point_linear_speed,collision_point_rotate_speed,weapon_damage,weapon_hit_tag:int,player_position):
@@ -152,9 +156,9 @@ func judge_whether_effective_damage(target_position):
 
 func lose_control(time):
 	print("lose control")
-	body_capability["controllable"] = false
+	body_capability["moveable"] = false
 	yield(get_tree().create_timer(time),"timeout")
-	body_capability["controllable"] = true
+	body_capability["moveable"] = true
 	print("can control")
 
 func _on_InvincibleTimer_timeout():
@@ -187,7 +191,7 @@ func judge_towards(target_global_position):#判断人物朝向
 
 func update_animation():#更新动画和残影ghost
 	if is_ani:
-		if self.body_capability["controllable"] == true:
+		if self.body_capability["moveable"] == true:
 			if towards == "right":
 				ani.flip_h = false
 				ani.animation = "horizon"
@@ -229,10 +233,16 @@ func i_am_player():
 	self.set_collision_mask_bit(6, true)
 
 func _creature_init():
-	self.linear_damp = 0
+	self.linear_damp = 10
 	self.angular_damp = 0
 	self.mode = RigidBody2D.MODE_CHARACTER
 	#判断self是否是AnimatedSprite
+	max_speed = $Attributes.max_speed
+	strength = $Attributes.strength
+	max_life = $Attributes.max_life
+	max_stamina = $Attributes.max_stamina
+	arm_length = $Attributes.arm_length
+	alert_distance = $Attributes.alert_distance
 	if self.has_node("AnimatedSprite"):
 		$AnimatedSprite.animation = "idle"
 		is_ani = true

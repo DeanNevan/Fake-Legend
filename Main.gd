@@ -2,9 +2,9 @@ extends Node2D
 
 onready var camera = $Camera2D
 onready var player = $Player
+
 #var player_position := Vector2()
 #var player = preload("res://Assets/Creatures/Update/Violet/Violet.tscn")
-
 
 func _ready():
 	pass

@@ -1,7 +1,7 @@
 extends "res://Scripts/Creatures/CreatureTemplate.gd"
 
 var vector_player_to_weapon = Vector2()
-var vector_player_to_mouse = Vector2()
+var vector_self_to_mouse = Vector2()
 var vector_weapon_to_mouse = Vector2()
 
 var control_direction := Vector2()#键盘按键wasd所指方向
@@ -27,7 +27,7 @@ func _physics_process(delta):
 	if Input.is_action_just_pressed("control_mouse_right_click"):
 		self.strength = self.strength + 1
 		print("plus strength!",strength)
-	if body_capability["controllable"] == true: 
+	if body_capability["moveable"] == true: 
 		_smooth_control_move()
 	if Input.is_key_pressed(KEY_SHIFT):
 		dodge(control_direction.normalized())
@@ -35,9 +35,9 @@ func _physics_process(delta):
 		#weapon.position = weapon.position
 	#print(wave_weapon_vector)
 	#print(wave_weapon_speed)
-	if has_weapon:
-		rotate_weapon((self.strength - weapon.weight) * 0.6, vector_weapon_to_mouse.normalized(), delta)
 	if has_weapon and weapon.type == "melee":
+		if Input.is_action_pressed("control_mouse_left_click"):
+			rotate_weapon((self.strength - weapon.weight) * 0.7, vector_weapon_to_mouse.normalized(), delta)
 		wave_weapon_vector = get_wave_weapon_vector()
 		wave_weapon_speed = get_wave_weapon_speed()
 		wave_weapon_direction = wave_weapon_vector.normalized()
@@ -46,7 +46,8 @@ func _physics_process(delta):
 			weapon.is_stuck = true
 		else:
 			weapon.is_stuck = false
-	print(self.linear_velocity)
+	#print(self.linear_velocity)
+	#print(get_viewport_rect().size)
 
 func _input(event):
 	pass
@@ -104,7 +105,7 @@ func _smooth_control_move():#平滑 控制人物移动
 	self.linear_velocity = velocity
 
 func _update_vector_of_player_mouse_weapon():
-	vector_player_to_mouse = get_global_mouse_position() - self.get_global_position()
+	vector_self_to_mouse = get_global_mouse_position() - self.get_global_position()
 	if has_weapon:
 		vector_weapon_to_mouse = get_global_mouse_position() - weapon.get_global_position()
 		vector_player_to_weapon = weapon.get_global_position() - self.get_global_position()
@@ -125,18 +126,18 @@ func _judge_control_direcition():#判断键盘wasd所控制的方向
 
 func get_wave_weapon_vector():
 	if Input.is_action_pressed("control_mouse_left_click"):
-		var wave_length = clamp(vector_player_to_mouse.length(), 0, arm_length)
-		var target_postion = self.global_position + (vector_player_to_mouse).normalized() * wave_length
+		var wave_length = clamp(vector_self_to_mouse.length(), 0, arm_length)
+		var target_postion = self.global_position + (vector_self_to_mouse).normalized() * wave_length
 		var wave_weapon_vector = target_postion - weapon.get_global_position()
 		if wave_weapon_vector.length() <= 1.5:
 			return Vector2()
-		#print(vector_player_to_mouse)
+		#print(vector_self_to_mouse)
 		#print(wave_length)
 		#print(target_postion)
 		#print(wave_weapon_vector)
 		return wave_weapon_vector
-	elif weapon.position.length() >= 5:
-		var return_vector = - weapon.position * (strength / 5.0)
+	elif weapon.position.length() >= 3:
+		var return_vector = - weapon.position * 2
 		return return_vector
 	else:
 		weapon.position = Vector2()
@@ -145,19 +146,23 @@ func get_wave_weapon_vector():
 func get_wave_weapon_speed():
 	#print("strength",strength)
 	#print("weight",weight)
-	var del = clamp(strength - weapon.weight, 0, 30)
+	var del = clamp(strength - weapon.weight, 3, 20)
 	var speed = del * 1.2 + wave_weapon_vector.length() * 1.2
 	#print("speed is",speed)
 	return speed
 
 func dodge(direction):#冲刺
-	if body_capability["can_dodge"] == true and body_capability["controllable"] == true and !weapon.is_stuck:
-		body_capability["controllable"] = false
+	if body_capability["can_dodge"] == true and body_capability["moveable"] == true:
+		if !has_weapon:
+			pass
+		elif weapon.is_stuck:
+			return
+		body_capability["moveable"] = false
 		is_dodging = true
 		var dodge_velocity_bonus = direction * (max_speed / 2) * clamp(self.strength / 2.0, 1, 20)
 		#print("dodging")
 		if has_weapon:
-			weapon.linear_velocity = dodge_velocity_bonus
+			weapon.linear_velocity = dodge_velocity_bonus * 2.5
 		self.linear_velocity = dodge_velocity_bonus
 		ghost.restart()
 		ghost.visible = true
@@ -166,7 +171,7 @@ func dodge(direction):#冲刺
 		ghost.visible = is_ghost_visible
 		#print("finish dodge")
 		body_capability["can_dodge"] = false
-		body_capability["controllable"] = true
+		body_capability["moveable"] = true
 		is_dodging = false
 		DodgeCooldownTimer.start()
 
