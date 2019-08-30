@@ -9,12 +9,14 @@ var target_vector := Vector2(1, 0)
 var speed = 0
 
 var should_judge := false
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	life_cost = 0
 	magic_cost = 0
 	stamina_cost = 0
 	level = 1
+	max_launch_time = 2.5
 
 func _physics_process(delta):
 	judge_whether_approached_target_position()
@@ -22,14 +24,17 @@ func _physics_process(delta):
 
 func judge_whether_approached_target_position():
 	if self.is_launching:
-		print((myself.weapon.global_position - (myself.global_position + target_vector)).length())
+		#print((myself.weapon.global_position - (myself.global_position + target_vector)).length())
 		if (myself.weapon.global_position - (myself.global_position + target_vector)).length() < 3 and should_judge:
 			emit_signal("approach_target_position")
 
 func _update():
 	if self.is_launching:
+		myself.is_moving_self_with_ability = true
+		myself.is_moving_weapon_with_ability = true
 		myself.wave_weapon(target_vector - (myself.weapon.global_position - myself.global_position), speed)
 		myself.rotate_weapon((myself.strength - myself.weapon.weight) * 0.7, (myself.weapon.global_position - myself.global_position).normalized(), get_physics_process_delta_time())
+		myself.ai_move(myself.vector_self_to_player.normalized(), myself.max_speed / 3.0)
 
 func launch():
 	if !myself.has_weapon:
@@ -38,7 +43,7 @@ func launch():
 		use_probability = 0.016
 	else:
 		return
-	if !._judge_whether_launch():
+	if !.judge_whether_launch():
 		return
 	
 	var vector_self_to_target_position
@@ -55,7 +60,6 @@ func launch():
 	speed = del * 1.2 + (target_vector - (myself.weapon.global_position - myself.global_position)).length() * 1.2
 	
 	is_launching = true
-	myself.is_moving_weapon_with_ability = true
 	should_judge = true
 	yield(self, "approach_target_position")
 	should_judge = false
@@ -73,4 +77,5 @@ func launch():
 	
 	print("end!!")
 	is_launching = false
+	myself.is_moving_self_with_ability = false
 	myself.is_moving_weapon_with_ability = false

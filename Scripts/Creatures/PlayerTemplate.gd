@@ -22,7 +22,6 @@ func _physics_process(delta):
 	_update_vector_of_player_mouse_weapon()
 	judge_towards(get_global_mouse_position())#判断朝向
 	update_animation()#更新动画
-	update_ghost()
 	_judge_control_direcition()#判断wasd所控制的方向
 	if Input.is_action_just_pressed("control_mouse_right_click"):
 		self.strength = self.strength + 1

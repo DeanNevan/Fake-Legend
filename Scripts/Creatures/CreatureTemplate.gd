@@ -26,7 +26,7 @@ var alive = true# 是否存活
 var is_ani := false
 var ani#AnimatedSprite
 var spr#Sprite
-var towards : String
+var towards := "right"
 
 var velocity = Vector2()
 
@@ -57,7 +57,7 @@ var position_pool_enabled := true
 var position_pool
 
 var ghost = PackedScene
-var is_ghost_visible := false#残影是否可见
+var is_ghost_visible := true#残影是否可见
 var is_ghost_emitting := false#一开始残影不释放
 
 var _update_ago_position := false
@@ -144,7 +144,7 @@ func judge_whether_effective_damage(target_position):
 	#print("target_position",target_local_position)
 	raycast.cast_to = target_local_position
 	raycast.force_raycast_update()
-	print(raycast.is_colliding())
+	#print(raycast.is_colliding())
 	if raycast.is_colliding():
 		#raycast.enabled = false
 		#raycast.set_collision_mask_bit(6, false)
@@ -155,11 +155,11 @@ func judge_whether_effective_damage(target_position):
 		return false
 
 func lose_control(time):
-	print("lose control")
+	#print("lose control")
 	body_capability["moveable"] = false
 	yield(get_tree().create_timer(time),"timeout")
 	body_capability["moveable"] = true
-	print("can control")
+	#print("can control")
 
 func _on_InvincibleTimer_timeout():
 	#print("invincible timer timeout")
@@ -198,24 +198,8 @@ func update_animation():#更新动画和残影ghost
 			if towards == "left":
 				ani.flip_h = true
 				ani.animation = "horizon"
-				ghost.scale.x = -1
 			if towards == "none":
 				ani.animation = "idle"
-
-func update_ghost():
-	if towards == "right":
-		if is_ani:
-			ghost.texture = ani.frames.get_frame("horizon", ani.frame)
-			ghost.scale.x = 1
-			return
-	if towards == "left":
-		if is_ani:
-			ghost.texture = ani.frames.get_frame("horizon", ani.frame)
-			ghost.scale.x = -1
-			return
-	if !is_ani:
-		ghost.texture = spr.texture
-		ghost.scale.x = 1
 
 func i_am_enemy():
 	self.set_collision_layer_bit(1, true)
@@ -266,12 +250,4 @@ func _creature_init():
 
 func _ghost_init():
 	ghost = preload("res://Assets/SpecialEffects/Ghost/Ghost.tscn").instance()
-	if is_ani:
-		ghost.texture = ani.frames.get_frame("horizon", ani.frame)
-	else:
-		ghost.texture = spr.texture
-	#ghost.emitting = is_ghost_emitting
-	ghost.global_position += body_transform
-	ghost.visible = is_ghost_visible
-	#print(body_transform)
 	add_child(ghost)

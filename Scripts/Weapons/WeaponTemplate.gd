@@ -42,7 +42,7 @@ func _process(delta):
 func _on_Weapon_body_entered(body,weapon_linear_speed:Vector2,weapon_damage:float,weapon_hit_tag:String):
 	#print("weapon_hit_tag_is",weapon_hit_tag)
 	#print("enter!")
-	print("it`s tag is", body.tag)
+	#print("it`s tag is", body.tag)
 	#以下if是判断并避免自己误伤自己人
 	if (self.tag == "player_weapon" and body.tag == "enemy") or (self.tag == "enemy_weapon" and body.tag == "player") or self.tag == "weapon":
 		pass

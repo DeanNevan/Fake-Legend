@@ -1,4 +1,6 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://Assets/SpecialEffects/Ghost/Ghost.gd" type="Script" id=1]
 
 [sub_resource type="Gradient" id=1]
 offsets = PoolRealArray( 0, 0.234375, 0.570313, 0.78125, 0.84375, 1 )
@@ -18,3 +20,4 @@ amount = 6
 lifetime = 0.5
 local_coords = false
 process_material = SubResource( 3 )
+script = ExtResource( 1 )
