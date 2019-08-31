@@ -1,11 +1,11 @@
-[gd_scene load_steps=11 format=2]
+[gd_scene load_steps=10 format=2]
 
-[ext_resource path="res://Assets/Art/Creatures/Simple/WhiteCrossBlock/WhiteCrossBlock.png" type="Texture" id=1]
-[ext_resource path="res://Fonts/Comfortaa-Bold.ttf" type="DynamicFontData" id=2]
+[ext_resource path="res://Assets/Other/LifeBar.tscn" type="PackedScene" id=1]
+[ext_resource path="res://Assets/Art/Creatures/Simple/WhiteCrossBlock/WhiteCrossBlock.png" type="Texture" id=2]
 [ext_resource path="res://Assets/Abilities/Abilities.tscn" type="PackedScene" id=3]
 [ext_resource path="res://Assets/Abilities/Strike/Strike.tscn" type="PackedScene" id=4]
 [ext_resource path="res://Assets/Abilities/Slash/Slash.tscn" type="PackedScene" id=5]
-[ext_resource path="res://Assets/Creatures/Update/Enemy/WhiteCrossBlock/Attributes.gd" type="Script" id=6]
+[ext_resource path="res://Assets/Creatures/Simple/WhiteCrossBlock/Attributes.gd" type="Script" id=6]
 
 [sub_resource type="PhysicsMaterial" id=1]
 friction = 0.0
@@ -13,10 +13,6 @@ rough = true
 
 [sub_resource type="RectangleShape2D" id=2]
 extents = Vector2( 5, 5 )
-
-[sub_resource type="DynamicFont" id=3]
-size = 13
-font_data = ExtResource( 2 )
 
 [sub_resource type="Curve2D" id=4]
 bake_interval = 1.0
@@ -33,24 +29,23 @@ physics_material_override = SubResource( 1 )
 gravity_scale = 0.0
 contact_monitor = true
 
+[node name="LifeBar" parent="." instance=ExtResource( 1 )]
+margin_left = -11.5
+margin_top = -15.0
+margin_right = 18.5
+margin_bottom = -9.0
+rect_scale = Vector2( 0.75, 0.75 )
+
 [node name="Sprite" type="Sprite" parent="."]
 position = Vector2( 0.0415783, 0 )
-texture = ExtResource( 1 )
+texture = ExtResource( 2 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 rotation = 0.785398
 shape = SubResource( 2 )
 
-[node name="LifeBar" type="ProgressBar" parent="."]
-margin_left = -18.514
-margin_top = -24.7634
-margin_right = 18.486
-margin_bottom = -8.7634
-custom_fonts/font = SubResource( 3 )
-step = 1.0
-value = 100.0
-
-[node name="Margin" type="Path2D" parent="."]
+[node name="Margin" type="Path2D" parent="CollisionShape2D"]
+rotation = -0.785398
 scale = Vector2( 0.5, 0.5 )
 curve = SubResource( 4 )
 

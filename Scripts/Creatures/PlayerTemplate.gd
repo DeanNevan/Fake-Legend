@@ -26,7 +26,7 @@ func _physics_process(delta):
 	if Input.is_action_just_pressed("control_mouse_right_click"):
 		self.strength = self.strength + 1
 		print("plus strength!",strength)
-	if body_capability["moveable"] == true: 
+	if body_capability["moveable"] == true and !self.is_moving_self_with_ability: 
 		_smooth_control_move()
 	if Input.is_key_pressed(KEY_SHIFT):
 		dodge(control_direction.normalized())
@@ -34,7 +34,7 @@ func _physics_process(delta):
 		#weapon.position = weapon.position
 	#print(wave_weapon_vector)
 	#print(wave_weapon_speed)
-	if has_weapon and weapon.type == "melee":
+	if has_weapon and weapon.type == "melee" and !self.is_moving_weapon_with_ability and body_capability["can_control_weapon"]:
 		if Input.is_action_pressed("control_mouse_left_click"):
 			rotate_weapon((self.strength - weapon.weight) * 0.7, vector_weapon_to_mouse.normalized(), delta)
 		wave_weapon_vector = get_wave_weapon_vector()
@@ -151,7 +151,7 @@ func get_wave_weapon_speed():
 	return speed
 
 func dodge(direction):#冲刺
-	if body_capability["can_dodge"] == true and body_capability["moveable"] == true:
+	if body_capability["moveable"] == true:
 		if !has_weapon:
 			pass
 		elif weapon.is_stuck:
@@ -169,7 +169,6 @@ func dodge(direction):#冲刺
 		self.velocity = Vector2()
 		ghost.visible = is_ghost_visible
 		#print("finish dodge")
-		body_capability["can_dodge"] = false
 		body_capability["moveable"] = true
 		is_dodging = false
 		DodgeCooldownTimer.start()

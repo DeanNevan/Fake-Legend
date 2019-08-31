@@ -1,15 +1,23 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=11 format=2]
 
-[ext_resource path="res://Assets/Creatures/Update/Player/Violet/Art/VioletAnimatedSpriteFrames.tres" type="SpriteFrames" id=1]
-[ext_resource path="res://Assets/Abilities/Slash/Slash.tscn" type="PackedScene" id=2]
-[ext_resource path="res://Assets/Abilities/Strike/Strike.tscn" type="PackedScene" id=3]
-[ext_resource path="res://Assets/Creatures/Update/Player/Violet/Attributes.gd" type="Script" id=4]
+[ext_resource path="res://Assets/Other/LifeBar.tscn" type="PackedScene" id=1]
+[ext_resource path="res://Assets/Creatures/Update/Violet/Art/VioletAnimatedSpriteFrames.tres" type="SpriteFrames" id=2]
+[ext_resource path="res://Assets/Creatures/Update/Violet/Attributes.gd" type="Script" id=3]
+[ext_resource path="res://Assets/Abilities/Abilities.tscn" type="PackedScene" id=4]
+[ext_resource path="res://Assets/Abilities/Strike/Strike.tscn" type="PackedScene" id=5]
+[ext_resource path="res://Assets/Abilities/Slash/Slash.tscn" type="PackedScene" id=6]
 
 [sub_resource type="PhysicsMaterial" id=1]
 friction = 0.4
 
 [sub_resource type="ConvexPolygonShape2D" id=2]
 points = PoolVector2Array( -7, 3, 7, 3, 4, 14, -4, 14 )
+
+[sub_resource type="Curve2D" id=4]
+bake_interval = 3.0
+_data = {
+"points": PoolVector2Array( 0, 0, 0, 0, -6.99479, -3.66438, 0, 0, 0, 0, 6.82938, -3.60468, 0, 0, 0, 0, 4.19155, 7.20174, 0, 0, 0, 0, -3.96618, 7.08233, 0, 0, 0, 0, -6.99479, -3.78379 )
+}
 
 [sub_resource type="Animation" id=3]
 resource_name = "breathe"
@@ -28,7 +36,7 @@ tracks/0/keys = {
 "values": [ Vector2( 1, 1 ), Vector2( 1.1, 0.9 ), Vector2( 1, 1 ) ]
 }
 tracks/1/type = "value"
-tracks/1/path = NodePath("Margin:scale")
+tracks/1/path = NodePath("AnimatedSprite:scale")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/imported = false
@@ -38,24 +46,6 @@ tracks/1/keys = {
 "transitions": PoolRealArray( 0.554785, 1, 1.62451 ),
 "update": 0,
 "values": [ Vector2( 1, 1 ), Vector2( 1.1, 0.9 ), Vector2( 1, 1 ) ]
-}
-tracks/2/type = "value"
-tracks/2/path = NodePath("AnimatedSprite:scale")
-tracks/2/interp = 1
-tracks/2/loop_wrap = true
-tracks/2/imported = false
-tracks/2/enabled = true
-tracks/2/keys = {
-"times": PoolRealArray( 0, 1, 2 ),
-"transitions": PoolRealArray( 0.554785, 1, 1.62451 ),
-"update": 0,
-"values": [ Vector2( 1, 1 ), Vector2( 1.1, 0.9 ), Vector2( 1, 1 ) ]
-}
-
-[sub_resource type="Curve2D" id=4]
-bake_interval = 3.0
-_data = {
-"points": PoolVector2Array( 0, 0, 0, 0, -6.99479, -3.66438, 0, 0, 0, 0, 6.82938, -3.60468, 0, 0, 0, 0, 4.19155, 7.20174, 0, 0, 0, 0, -3.96618, 7.08233, 0, 0, 0, 0, -6.99479, -3.78379 )
 }
 
 [node name="Violet" type="RigidBody2D"]
@@ -70,10 +60,16 @@ __meta__ = {
 "_edit_horizontal_guides_": [  ]
 }
 
+[node name="LifeBar" parent="." instance=ExtResource( 1 )]
+margin_left = -15.0
+margin_top = -30.0
+margin_right = 15.0
+margin_bottom = -24.0
+
 [node name="AnimatedSprite" type="AnimatedSprite" parent="."]
 position = Vector2( 0, -8.38657 )
 scale = Vector2( 1.1, 0.9 )
-frames = ExtResource( 1 )
+frames = ExtResource( 2 )
 animation = "horizon"
 playing = true
 
@@ -82,21 +78,22 @@ position = Vector2( 0, -6 )
 scale = Vector2( 1.1, 0.9 )
 shape = SubResource( 2 )
 
+[node name="Margin" type="Path2D" parent="CollisionShape2D"]
+position = Vector2( 0, 6.66667 )
+scale = Vector2( 1, 1 )
+curve = SubResource( 4 )
+
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 autoplay = "breathe"
 playback_process_mode = 0
 anims/breathe = SubResource( 3 )
 "anims/breathe 2" = SubResource( 3 )
 
-[node name="Margin" type="Path2D" parent="."]
-scale = Vector2( 1.1, 0.9 )
-curve = SubResource( 4 )
-
-[node name="Abilities" type="Node" parent="."]
-
-[node name="Slash" parent="Abilities" instance=ExtResource( 2 )]
-
-[node name="Strike" parent="Abilities" instance=ExtResource( 3 )]
-
 [node name="Attributes" type="Node" parent="."]
-script = ExtResource( 4 )
+script = ExtResource( 3 )
+
+[node name="Abilities" parent="." instance=ExtResource( 4 )]
+
+[node name="Strike" parent="Abilities" instance=ExtResource( 5 )]
+
+[node name="Slash" parent="Abilities" instance=ExtResource( 6 )]

@@ -10,6 +10,7 @@ var speed = 0
 
 var should_judge := false
 
+var vector_self_to_target_position := Vector2()
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	life_cost = 0
@@ -17,6 +18,9 @@ func _ready():
 	stamina_cost = 0
 	level = 1
 	max_launch_time = 2.5
+	
+	player_control_event = KEY_X
+	launch_ai_state = ["combating"]
 
 func _physics_process(delta):
 	judge_whether_approached_target_position()
@@ -25,16 +29,16 @@ func _physics_process(delta):
 func judge_whether_approached_target_position():
 	if self.is_launching:
 		#print((myself.weapon.global_position - (myself.global_position + target_vector)).length())
-		if (myself.weapon.global_position - (myself.global_position + target_vector)).length() < 3 and should_judge:
+		if (myself.weapon.global_position - (myself.global_position + target_vector)).length() < 10 and should_judge:
 			emit_signal("approach_target_position")
 
 func _update():
 	if self.is_launching:
 		myself.is_moving_self_with_ability = true
 		myself.is_moving_weapon_with_ability = true
-		myself.wave_weapon(target_vector - (myself.weapon.global_position - myself.global_position), speed)
+		myself.wave_weapon((target_vector - (myself.weapon.global_position - myself.global_position)).normalized(), speed)
 		myself.rotate_weapon((myself.strength - myself.weapon.weight) * 0.7, (myself.weapon.global_position - myself.global_position).normalized(), get_physics_process_delta_time())
-		myself.ai_move(myself.vector_self_to_player.normalized(), myself.max_speed / 3.0)
+		myself.ai_move(vector_self_to_target_position.normalized(), myself.max_speed / 3.0)
 
 func launch():
 	if !myself.has_weapon:
@@ -45,19 +49,19 @@ func launch():
 		return
 	if !.judge_whether_launch():
 		return
-	
-	var vector_self_to_target_position
 	var del = clamp(myself.strength - myself.weapon.weight, 3, 20)
 	if myself.tag == "player":
 		vector_self_to_target_position = myself.vector_self_to_mouse
 	if myself.tag == "enemy":
 		vector_self_to_target_position = myself.vector_self_to_player
 	print("start!!")
-	var rotate_degree = rand_range(- PI / 2, PI / 2)
+	var rotate_degree = rand_range(- PI / 2.5, PI / 2.5)
+	while abs(rotate_degree) < 0.5:
+		rotate_degree = rand_range(- PI / 2.5, PI / 2.5)
 	var target_angle = vector_self_to_target_position.angle() + rotate_degree
 	target_direction = Vector2(cos(target_angle), sin(target_angle))
 	target_vector = target_direction * myself.arm_length
-	speed = del * 1.2 + (target_vector - (myself.weapon.global_position - myself.global_position)).length() * 1.2
+	speed = del * 1.2 + (target_vector - (myself.weapon.global_position - myself.global_position)).length() * 1
 	
 	is_launching = true
 	should_judge = true

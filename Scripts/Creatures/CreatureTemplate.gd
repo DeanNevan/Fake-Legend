@@ -26,9 +26,10 @@ var alive = true# 是否存活
 var is_ani := false
 var ani#AnimatedSprite
 var spr#Sprite
-var towards := "right"
+var towards := "none"
 
 var velocity = Vector2()
+var last_damage = 0
 
 #挥舞武器相关变量
 var weapon_speed_bonus = 1
@@ -36,11 +37,13 @@ var wave_weapon_vector := Vector2()
 var wave_weapon_speed = 0
 var wave_weapon_direction := Vector2()
 
-var body_capability := {"invincible" : false, "moveable" : true, "can_dodge" : true}
+var body_capability := {"invincible" : false, "moveable" : true, "can_use_ability" : true, "can_control_weapon" : true}
+var is_losing_control := false
+var last_time = 0
 
 var pos1 = self.global_position
 var pos2 = self.global_position
-var linear_speed : Vector2 = pos2 - pos1
+var linear_speed := Vector2()
 
 var DodgeCooldownTimer
 var dodge_time = 0.2
@@ -48,7 +51,7 @@ var dodge_time = 0.2
 onready var InvincibleTimer#无敌时间计时器
 var invincible_time : float#无敌时间
 
-onready var margin = $Margin
+onready var margin = get_node("CollisionShape2D/Margin")
 onready var raycast#用来检测是否为有效攻击（有时武器会穿墙）
 
 #位置栈#暂无内容#
@@ -67,15 +70,33 @@ var ago_position := Vector2()
 var is_moving_self_with_ability := false
 var is_moving_weapon_with_ability := false
 
+onready var abilities = $Abilities
+
 func _ready():
 	_creature_init()
 	_ghost_init()
 	#print(invincible_time)
 
 func _physics_process(delta):
+	if self.body_capability["can_use_ability"]:
+		abilities.launch_abilities()
+	
 	pos2 = self.global_position
 	self.linear_speed = pos2 - pos1
 	pos1 = pos2
+	update_LifeBar()
+	update_body_capability()
+	
+	if self.body_capability["invincible"]:
+		if self.is_ani:
+			ani.visible = !ani.visible
+		else:
+			spr.visible = !spr.visible
+	else:
+		if self.is_ani:
+			ani.visible = true
+		else:
+			spr.visible = true
 	#generate_ghost()
 
 func rotate_weapon(speed, target_direction, delta):
@@ -104,26 +125,26 @@ func wave_weapon(direction, speed):
 	direction = direction.normalized()
 	weapon.linear_velocity += direction * speed * 0.8
 
-func get_damage(collision_point_linear_speed,collision_point_rotate_speed,weapon_damage,weapon_hit_tag:int,player_position):
+func get_damage(damage, is_hit, attacker_position):
 	#print("time is",invincible_time)
 	if body_capability["invincible"] == true:
 		return
-	var judge_result = judge_whether_effective_damage(player_position)
-	#print(judge_result)
-	if judge_result:
-		return
-	body_capability["invincible"] = true
-	InvincibleTimer.start()
+	
+	if is_hit:#如果是一次受击
+		var judge_result = judge_whether_effective_damage(attacker_position)
+		#print(judge_result)
+		if judge_result:
+			return
+		body_capability["invincible"] = true
+		InvincibleTimer.start()
+		lose_control(invincible_time / 2.0)#失去控制（受击后的硬直）
 	#print("old life is",life)
 	if alive == false:	# 如果没有存活，则退出函数
 		return
 	#print(collision_point_linear_speed)
 	#print(self.linear_speed)
-	var damage = collision_point_linear_speed.length() + abs(collision_point_rotate_speed / 2) + weapon_damage + weapon_hit_tag*2
 	print("cause damage",damage)
 	life -= damage# 减少生命值
-	update_LifeBar()#更新生命条
-	lose_control(invincible_time / 2.0)#失去控制（受击后的硬直）
 	if life <= 0:
 		life = 0
 		$CollisionShape2D.disabled = true	# 碰撞不可用
@@ -131,16 +152,25 @@ func get_damage(collision_point_linear_speed,collision_point_rotate_speed,weapon
 		alive = false
 	pass
 
-func update_LifeBar():
-	if self.tag == "enemy":
-		$LifeBar.value = life
+func update_body_capability():
+	if is_losing_control:
+		body_capability["moveable"] = false
+		body_capability["can_use_ability"] = false
+		body_capability["can_control_weapon"] = false
 	else:
-		pass
+		body_capability["moveable"] = true
+		body_capability["can_use_ability"] = true
+		body_capability["can_control_weapon"] = true
 
-func judge_whether_effective_damage(target_position):
+func update_LifeBar():
+	if $LifeBar.value != self.life:
+		$LifeBar.value = life
+
+
+func judge_whether_effective_damage(target_global_position):
 	raycast.enabled = true
 	raycast.set_collision_mask_bit(6,true)#检测墙体
-	var target_local_position = target_position - self.global_position
+	var target_local_position = target_global_position - self.global_position
 	#print("target_position",target_local_position)
 	raycast.cast_to = target_local_position
 	raycast.force_raycast_update()
@@ -156,9 +186,9 @@ func judge_whether_effective_damage(target_position):
 
 func lose_control(time):
 	#print("lose control")
-	body_capability["moveable"] = false
-	yield(get_tree().create_timer(time),"timeout")
-	body_capability["moveable"] = true
+	is_losing_control = true
+	yield(get_tree().create_timer(time + last_time),"timeout")
+	is_losing_control = false
 	#print("can control")
 
 func _on_InvincibleTimer_timeout():
@@ -176,7 +206,25 @@ func _get_ago_position():
 		yield(get_tree().create_timer(_update_ago_position_time), "timeout")
 		_update_ago_position = true
 
-func judge_towards(target_global_position):#判断人物朝向
+func ai_move(direction, max_speed):
+	if !body_capability["moveable"]:
+		return
+	var move_speed = clamp((strength - total_weight) / 1, 3, 15)
+	velocity += direction * move_speed
+	if velocity.length() <= max_speed:
+		pass
+	else:
+		velocity = velocity.normalized() * max_speed
+	self.linear_velocity = velocity
+
+func ai_stop_move():
+	if self.linear_velocity.length() <= 4:
+		self.linear_velocity = Vector2()
+		return
+	var move_speed = clamp((strength - total_weight) / 1, 3, 15)
+	self.linear_velocity += - self.linear_velocity.normalized() * move_speed
+
+func judge_towards(target_global_position):#判断生物朝向
 	if is_ani:
 		var vec_x
 		var vec_y
@@ -186,11 +234,12 @@ func judge_towards(target_global_position):#判断人物朝向
 			towards = "right"
 		elif vec_x < 0:
 			towards = "left"
-		elif vec_x == 0 and vec_y == 0:
+		if self.linear_speed.length() == 0:
 			towards = "none"
 
 func update_animation():#更新动画和残影ghost
 	if is_ani:
+		ani.speed_scale = clamp(self.linear_velocity.length() / max_speed, 0.3, 2)
 		if self.body_capability["moveable"] == true:
 			if towards == "right":
 				ani.flip_h = false
@@ -220,6 +269,8 @@ func _creature_init():
 	self.linear_damp = 10
 	self.angular_damp = 0
 	self.mode = RigidBody2D.MODE_CHARACTER
+	self.z_index = 1
+	
 	#判断self是否是AnimatedSprite
 	max_speed = $Attributes.max_speed
 	strength = $Attributes.strength
@@ -227,12 +278,18 @@ func _creature_init():
 	max_stamina = $Attributes.max_stamina
 	arm_length = $Attributes.arm_length
 	alert_distance = $Attributes.alert_distance
+	
+	life = max_life
+	$LifeBar.max_value = self.max_life
+	$LifeBar.value = self.life
+	update_LifeBar()
 	if self.has_node("AnimatedSprite"):
 		$AnimatedSprite.animation = "idle"
 		is_ani = true
 		ani = $AnimatedSprite
 		body_transform = $AnimatedSprite.position
-		#ani.animation = "idle"
+		update_animation()
+		ani.animation = "idle"
 	elif self.has_node("Sprite"):
 		spr = $Sprite
 		body_transform = $Sprite.position

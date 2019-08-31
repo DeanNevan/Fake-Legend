@@ -81,7 +81,8 @@ func _on_Weapon_body_entered(body,weapon_linear_speed:Vector2,weapon_damage:floa
 	#print("collision_point_angular_speed",collision_point_rotate_speed)
 	#print("body!")
 	var player_position = self.global_position - self.position
-	body.get_damage(collision_point_linear_speed, collision_point_rotate_speed, weapon_damage, collision_tag[weapon_hit_tag], player_position)
+	var damage = collision_point_linear_speed.length() + abs(collision_point_rotate_speed / 2) + weapon_damage + collision_tag[weapon_hit_tag] * 2
+	body.get_damage(damage, true, get_parent().global_position)
 
 func i_am_player_weapon():
 	clear_collision_bit(self)

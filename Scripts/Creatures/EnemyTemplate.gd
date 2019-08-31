@@ -21,7 +21,6 @@ var path = []
 var goal = Vector2()
 
 var move_vector := Vector2()
-var move_speed = 0
 
 var target_vector = Vector2()
 var ang
@@ -35,7 +34,6 @@ onready var main = self.get_parent().get_parent().get_parent().get_parent()
 onready var player = main.get_node("Player")
 onready var my_room = self.get_parent().get_parent()
 onready var nav = my_room.get_node_or_null("Navigation2D")
-onready var abilities = $Abilities
 
 func _ready():
 	preload("res://Scripts/Creatures/CreatureTemplate.gd")
@@ -48,6 +46,9 @@ func _ready():
 
 func _physics_process(delta):
 	update()
+	
+	judge_towards(self.global_position + self.linear_velocity)
+	update_animation()
 	#var arr = get_tree().get_nodes_in_group("enemies")
 	#player_position = arr[0].player_position
 	#print(player.global_position)
@@ -124,8 +125,6 @@ func ai_state_combat():
 	if distance_self_to_player > attack_distance * 1.8:
 		ai_state = "catching"
 	
-	abilities.launch_abilities()
-	
 	if !is_moving_self_with_ability and body_capability["moveable"] == true:
 		match self.combat_mode:
 			"front":
@@ -163,6 +162,8 @@ func ai_combat_move_ranged():
 	pass
 
 func ai_update_weapon_position_and_rotation():
+	if !body_capability["can_control_weapon"]:
+		return
 	if !is_moving_weapon_with_ability and self.has_weapon:
 		if (weapon.global_position - global_position).length() > 3:
 			var del = clamp(strength - weapon.weight, 3, 20)
@@ -183,24 +184,6 @@ func ai_update_weapon_position_and_rotation():
 			yield(get_tree().create_timer(1.5), "timeout")#每过1.5秒 瞄准玩家 或 随即转动一下武器位置
 			_prepare_weapon = true
 		rotate_weapon((strength - weapon.weight) * 0.7, target_vector, get_physics_process_delta_time())
-
-func ai_move(direction, max_speed):
-	if body_capability["moveable"] == false:
-		return
-	move_speed = clamp((strength - total_weight) / 1, 3, 15)
-	velocity += direction * move_speed
-	if velocity.length() <= max_speed:
-		pass
-	else:
-		velocity = velocity.normalized() * max_speed
-	self.linear_velocity = velocity
-
-func ai_stop_move():
-	if self.linear_velocity.length() <= 4:
-		self.linear_velocity = Vector2()
-		return
-	move_speed = clamp((strength - total_weight) / 1, 3, 15)
-	self.linear_velocity += - self.linear_velocity.normalized() * move_speed
 
 func ai_search(target_position):
 	path = nav.get_simple_path(self_in_room_position, target_position, true)
@@ -245,9 +228,6 @@ func _enemy_init():
 	i_am_enemy()
 	self.contacts_reported = 8
 	
-	life = max_life
-	$LifeBar.max_value = self.max_life
-	$LifeBar.value = self.life
 	self.add_child(sight_line)
 	sight_line.set_collision_mask_bit(0,false)
 	sight_line.set_collision_mask_bit(6,true)#检测墙体
@@ -264,10 +244,11 @@ func _enemy_weapon_init():
 		weapon.i_am_enemy_weapon()
 		#print(total_weight)
 		total_weight = self.weight + weapon.weight#人物与武器总重
-		self.attack_distance = self.arm_length + weapon.length
-			
+		if weapon.type == "melee":
+			self.attack_distance = self.arm_length + weapon.length + clamp(self.strength / 5.0, 0, 20)
+		
 	else:
 		has_weapon = false
 		total_weight = self.weight
-		self.attack_distance = self.arm_length + 45
+		self.attack_distance = self.arm_length + clamp(self.strength / 5.0, 0, 20)
 		#print(attack_distance)

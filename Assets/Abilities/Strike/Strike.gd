@@ -10,21 +10,26 @@ func _ready():
 	magic_cost = 0
 	stamina_cost = 5
 	level = 1
-	
 	speed = myself.max_speed * 2
+	
+	player_control_event = KEY_Z
+	launch_ai_state = ["combating"]
+	
+	myself.connect("body_entered", self, "_on_body_entered")
 
 func _physics_process(delta):
 	_update()
 
 func _update():
 	if is_launching:
+		myself.is_moving_self_with_ability = true
 		myself.linear_velocity = direction * speed
 
 func _on_body_entered(body):
-	if body.tag == "player":
+	if body.tag != myself.tag:
 		if body.has_method("get_damage"):
 			var damage = (body.linear_speed - myself.linear_speed).length() * clamp((myself.strength - myself.weight) / 2.0 , 3, 8)
-			body.life -= damage
+			body.get_damage(damage, true, myself.global_position)
 			#print(damage)
 
 func launch():
@@ -34,16 +39,14 @@ func launch():
 		use_probability = 0.004
 	if !.judge_whether_launch():
 		return
-	print("strike!!!")
-	
 	if myself.tag == "enemy":
 		direction = myself.vector_self_to_player.normalized()
 	if myself.tag == "player":
-		direction = myself.vector_player_to_mouse.normalized()
+		direction = myself.vector_self_to_mouse.normalized()
 	is_launching = true
-	myself.is_moving_self_with_ability = true
+	
 	myself.contact_monitor = true
-	myself.connect("body_entered", self, "_on_body_entered")
+	print("strike!!!")
 	
 	speed = - 10
 	yield(get_tree().create_timer(0.4), "timeout")

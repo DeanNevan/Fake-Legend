@@ -1,11 +1,4 @@
-extends Node
-
-var max_speed
-var strength
-var max_life
-var max_stamina
-var arm_length
-var alert_distance
+extends "res://Scripts/Creatures/AttributesTemplate.gd"
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
