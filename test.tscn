@@ -1,14 +1,11 @@
-[gd_scene load_steps=10 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://Main.gd" type="Script" id=1]
 [ext_resource path="res://Assets/Creatures/Update/Violet/Violet.tscn" type="PackedScene" id=2]
 [ext_resource path="res://Scripts/Creatures/PlayerTemplate.gd" type="Script" id=3]
-[ext_resource path="res://Assets/Weapons/Update/HeavySword/HeavySword.tscn" type="PackedScene" id=4]
-[ext_resource path="res://Assets/Rooms/Update/TestRoom/TestRoom1/TestRoom1.tscn" type="PackedScene" id=5]
-[ext_resource path="res://Assets/Creatures/Simple/WhiteCrossBlock/WhiteCrossBlock.tscn" type="PackedScene" id=6]
-[ext_resource path="res://Scripts/Creatures/EnemyTemplate.gd" type="Script" id=7]
-[ext_resource path="res://Assets/Weapons/Simple/Sword/Sword.tscn" type="PackedScene" id=8]
-[ext_resource path="res://Assets/Creatures/Update/Bat/Bat.tscn" type="PackedScene" id=9]
+[ext_resource path="res://Assets/Rooms/Update/TestRoom/TestRoom1/TestRoom1.tscn" type="PackedScene" id=4]
+[ext_resource path="res://Assets/Creatures/Update/Bat/Bat.tscn" type="PackedScene" id=5]
+[ext_resource path="res://Scripts/Creatures/EnemyTemplate.gd" type="Script" id=6]
 
 [node name="Node2D" type="Node2D"]
 script = ExtResource( 1 )
@@ -20,61 +17,58 @@ zoom = Vector2( 0.4, 0.4 )
 [node name="Player" parent="." instance=ExtResource( 2 )]
 position = Vector2( -160, 125.237 )
 script = ExtResource( 3 )
-weaponScene = ExtResource( 4 )
 
 [node name="Room" type="Node" parent="."]
 
-[node name="TestRoom1" parent="Room" instance=ExtResource( 5 )]
-position = Vector2( -300.556, 0 )
+[node name="TestRoom1" parent="Room" instance=ExtResource( 4 )]
+position = Vector2( -300, -10 )
 
 [node name="Enemy" type="Node" parent="Room/TestRoom1"]
 
-[node name="WhiteCrossCore" parent="Room/TestRoom1/Enemy" instance=ExtResource( 6 )]
-position = Vector2( -260, 150 )
-script = ExtResource( 7 )
+[node name="Bat11" parent="Room/TestRoom1/Enemy" instance=ExtResource( 5 )]
+position = Vector2( -50, 270 )
+script = ExtResource( 6 )
 
-[node name="WhiteCrossCore3" parent="Room/TestRoom1/Enemy" instance=ExtResource( 6 )]
-position = Vector2( 140, 80 )
-script = ExtResource( 7 )
-weaponScene = ExtResource( 8 )
+[node name="Bat12" parent="Room/TestRoom1/Enemy" instance=ExtResource( 5 )]
+position = Vector2( -50, 270 )
+script = ExtResource( 6 )
 
-[node name="WhiteCrossCore2" parent="Room/TestRoom1/Enemy" instance=ExtResource( 6 )]
-position = Vector2( -241.514, 60 )
-script = ExtResource( 7 )
-weaponScene = ExtResource( 8 )
+[node name="Bat13" parent="Room/TestRoom1/Enemy" instance=ExtResource( 5 )]
+position = Vector2( -50, 270 )
+script = ExtResource( 6 )
 
-[node name="Bat" parent="Room/TestRoom1/Enemy" instance=ExtResource( 9 )]
-position = Vector2( 230, 240 )
-script = ExtResource( 7 )
+[node name="Bat14" parent="Room/TestRoom1/Enemy" instance=ExtResource( 5 )]
+position = Vector2( -50, 270 )
+script = ExtResource( 6 )
 
-[node name="Bat8" parent="Room/TestRoom1/Enemy" instance=ExtResource( 9 )]
-position = Vector2( 210, 180 )
-script = ExtResource( 7 )
+[node name="Bat15" parent="Room/TestRoom1/Enemy" instance=ExtResource( 5 )]
+position = Vector2( -50, 270 )
+script = ExtResource( 6 )
 
-[node name="Bat2" parent="Room/TestRoom1/Enemy" instance=ExtResource( 9 )]
-position = Vector2( -70, 274.938 )
-script = ExtResource( 7 )
+[node name="Bat16" parent="Room/TestRoom1/Enemy" instance=ExtResource( 5 )]
+position = Vector2( -50, 270 )
+script = ExtResource( 6 )
 
-[node name="Bat3" parent="Room/TestRoom1/Enemy" instance=ExtResource( 9 )]
-position = Vector2( 250, 250 )
-script = ExtResource( 7 )
+[node name="Bat17" parent="Room/TestRoom1/Enemy" instance=ExtResource( 5 )]
+position = Vector2( -50, 270 )
+script = ExtResource( 6 )
 
-[node name="Bat9" parent="Room/TestRoom1/Enemy" instance=ExtResource( 9 )]
-position = Vector2( 230, 190 )
-script = ExtResource( 7 )
+[node name="Bat18" parent="Room/TestRoom1/Enemy" instance=ExtResource( 5 )]
+position = Vector2( -50, 270 )
+script = ExtResource( 6 )
 
-[node name="Bat4" parent="Room/TestRoom1/Enemy" instance=ExtResource( 9 )]
-position = Vector2( 210, 270 )
-script = ExtResource( 7 )
+[node name="Bat19" parent="Room/TestRoom1/Enemy" instance=ExtResource( 5 )]
+position = Vector2( -50, 270 )
+script = ExtResource( 6 )
 
-[node name="Bat6" parent="Room/TestRoom1/Enemy" instance=ExtResource( 9 )]
-position = Vector2( 190, 210 )
-script = ExtResource( 7 )
+[node name="Bat20" parent="Room/TestRoom1/Enemy" instance=ExtResource( 5 )]
+position = Vector2( -50, 270 )
+script = ExtResource( 6 )
 
-[node name="Bat5" parent="Room/TestRoom1/Enemy" instance=ExtResource( 9 )]
-position = Vector2( 231, 280 )
-script = ExtResource( 7 )
+[node name="Bat21" parent="Room/TestRoom1/Enemy" instance=ExtResource( 5 )]
+position = Vector2( -50, 270 )
+script = ExtResource( 6 )
 
-[node name="Bat7" parent="Room/TestRoom1/Enemy" instance=ExtResource( 9 )]
-position = Vector2( 211, 220 )
-script = ExtResource( 7 )
+[node name="Bat22" parent="Room/TestRoom1/Enemy" instance=ExtResource( 5 )]
+position = Vector2( -50, 270 )
+script = ExtResource( 6 )

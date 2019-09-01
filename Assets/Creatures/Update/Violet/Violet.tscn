@@ -13,14 +13,13 @@ friction = 0.4
 [sub_resource type="ConvexPolygonShape2D" id=2]
 points = PoolVector2Array( -7, 3, 7, 3, 4, 14, -4, 14 )
 
-[sub_resource type="Curve2D" id=4]
+[sub_resource type="Curve2D" id=3]
 bake_interval = 3.0
 _data = {
 "points": PoolVector2Array( 0, 0, 0, 0, -6.99479, -3.66438, 0, 0, 0, 0, 6.82938, -3.60468, 0, 0, 0, 0, 4.19155, 7.20174, 0, 0, 0, 0, -3.96618, 7.08233, 0, 0, 0, 0, -6.99479, -3.78379 )
 }
 
-[sub_resource type="Animation" id=3]
-resource_name = "breathe"
+[sub_resource type="Animation" id=4]
 length = 2.0
 loop = true
 tracks/0/type = "value"
@@ -80,14 +79,13 @@ shape = SubResource( 2 )
 
 [node name="Margin" type="Path2D" parent="CollisionShape2D"]
 position = Vector2( 0, 6.66667 )
-scale = Vector2( 1, 1 )
-curve = SubResource( 4 )
+curve = SubResource( 3 )
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 autoplay = "breathe"
 playback_process_mode = 0
-anims/breathe = SubResource( 3 )
-"anims/breathe 2" = SubResource( 3 )
+anims/breathe = SubResource( 4 )
+"anims/breathe 2" = SubResource( 4 )
 
 [node name="Attributes" type="Node" parent="."]
 script = ExtResource( 3 )

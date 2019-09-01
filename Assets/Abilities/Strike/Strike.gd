@@ -14,6 +14,8 @@ func _ready():
 	
 	player_control_event = KEY_Z
 	launch_ai_state = ["combating"]
+	require_weapon_type = []
+	require_body_capability = ["moveable", "can_use_ability"]
 	
 	myself.connect("body_entered", self, "_on_body_entered")
 
@@ -27,26 +29,34 @@ func _update():
 
 func _on_body_entered(body):
 	if body.tag != myself.tag:
+		print(body.tag)
 		if body.has_method("get_damage"):
-			var damage = (body.linear_speed - myself.linear_speed).length() * clamp((myself.strength - myself.weight) / 2.0 , 3, 8)
+			var damage = (body.linear_speed - myself.linear_speed).length() / 3.0 * clamp((myself.strength - myself.weight) / 2.0 , 3, 8)
 			body.get_damage(damage, true, myself.global_position)
 			#print(damage)
 
 func launch():
+	if myself.tag == "enemy":
+		if myself.distance_self_to_player > 100:
+			return
 	if !myself.has_weapon:
 		use_probability = 0.016
-	else:
+	elif myself.weapon.type == "melee":
 		use_probability = 0.004
+	else:
+		use_probability = 0.001
 	if !.judge_whether_launch():
 		return
+	
 	if myself.tag == "enemy":
 		direction = myself.vector_self_to_player.normalized()
 	if myself.tag == "player":
 		direction = myself.vector_self_to_mouse.normalized()
 	is_launching = true
 	
+	myself.contacts_reported = 6
 	myself.contact_monitor = true
-	print("strike!!!")
+	#print("strike!!!")
 	
 	speed = - 10
 	yield(get_tree().create_timer(0.4), "timeout")
@@ -65,4 +75,5 @@ func launch():
 	is_launching = false
 	myself.is_moving_self_with_ability = false
 	myself.contact_monitor = false
-	print("stop stike!!!")
+	myself.contacts_reported = 0
+	#print("stop stike!!!")

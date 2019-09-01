@@ -21,6 +21,7 @@ var life#生命
 var total_weight = 0#总重
 var attack_distance#攻击距离（武器长度加臂展）
 var alive = true# 是否存活
+var max_bear_damage
 
 #用于AnimatedSprite相关
 var is_ani := false
@@ -38,11 +39,13 @@ var wave_weapon_speed = 0
 var wave_weapon_direction := Vector2()
 
 var body_capability := {"invincible" : false, "moveable" : true, "can_use_ability" : true, "can_control_weapon" : true}
-var is_losing_control := false
 var last_time = 0
+var take_damage_in_one_second = 0
+var life_one_second_ago = 0 
 
-var pos1 = self.global_position
-var pos2 = self.global_position
+
+var pos1 = Vector2()
+var pos2 = Vector2()
 var linear_speed := Vector2()
 
 var DodgeCooldownTimer
@@ -60,8 +63,9 @@ var position_pool_enabled := true
 var position_pool
 
 var ghost = PackedScene
-var is_ghost_visible := true#残影是否可见
+var is_ghost_visible := false#残影一开始是否可见
 var is_ghost_emitting := false#一开始残影不释放
+var restart_ghost := true
 
 var _update_ago_position := false
 var _update_ago_position_time = dodge_time / 2
@@ -70,9 +74,34 @@ var ago_position := Vector2()
 var is_moving_self_with_ability := false
 var is_moving_weapon_with_ability := false
 
+var timer_capability_moveable#moveable的计时器
+var timer_capability_weapon#can_control_weapon的计时器
+var timer_capability_ability#can_use_ability的计时器
+
+#var _timer
+var _should_update_get_hit_lose_control := true#是否更新受击硬直
+
+var _should_update_flash = true#无敌状态时 闪烁计时器
+var flash_count = 0
+
 onready var abilities = $Abilities
 
 func _ready():
+	timer_capability_moveable = Timer.new()
+	timer_capability_weapon = Timer.new()
+	timer_capability_ability = Timer.new()
+	timer_capability_moveable.one_shot = true
+	timer_capability_moveable.wait_time = 0.01
+	timer_capability_weapon.one_shot = true
+	timer_capability_weapon.wait_time = 0.01
+	timer_capability_ability.one_shot = true
+	timer_capability_ability.wait_time = 0.01
+	add_child(timer_capability_moveable)
+	add_child(timer_capability_weapon)
+	add_child(timer_capability_ability)
+	
+	
+	
 	_creature_init()
 	_ghost_init()
 	#print(invincible_time)
@@ -81,28 +110,57 @@ func _physics_process(delta):
 	if self.body_capability["can_use_ability"]:
 		abilities.launch_abilities()
 	
+	if self.linear_velocity.length() >= max_speed:
+		if restart_ghost:
+			restart_ghost = false
+			ghost.restart()
+		ghost.visible = true
+	else:
+		restart_ghost = true
+		ghost.visible = false
+	
+	if self.has_weapon:
+		if weapon.global_position.y < self.global_position.y:
+			weapon.z_index = -1
+		else:
+			weapon.z_index = 1
+	
 	pos2 = self.global_position
 	self.linear_speed = pos2 - pos1
 	pos1 = pos2
 	update_LifeBar()
-	update_body_capability()
+	_update_max_bear_damage()
+	_take_damage_inspector()
+	_update_body_capability()
+	_update_body_attributes()
 	
 	if self.body_capability["invincible"]:
+		_flash()
+	elif flash_count % 2 != 0:
+		_flash()
+	else:
+		flash_count = 0
+	_update_alive_state()
+
+func _flash():
+	if _should_update_flash:
 		if self.is_ani:
 			ani.visible = !ani.visible
 		else:
 			spr.visible = !spr.visible
+		_should_update_flash = false
+		yield(get_tree().create_timer(0.05), "timeout")
+		flash_count += 1
+		_should_update_flash = true
 	else:
-		if self.is_ani:
-			ani.visible = true
-		else:
-			spr.visible = true
-	#generate_ghost()
+		return
 
 func rotate_weapon(speed, target_direction, delta):
 	if !weapon.is_controllable:
 		return
 	if !has_weapon:
+		return
+	if !self.body_capability["can_control_weapon"]:
 		return
 	speed = clamp(speed, 2, 15)
 	#print("rotate speed is",speed)
@@ -113,6 +171,8 @@ func wave_weapon(direction, speed):
 	if !weapon.is_controllable:
 		return
 	if !has_weapon:
+		return
+	if !self.body_capability["can_control_weapon"]:
 		return
 	#if weapon.position.length() <= 2:
 		#weapon_speed_bonus = clamp((strength - weapon.weight) / 4, 1.5, 8.0)
@@ -137,7 +197,6 @@ func get_damage(damage, is_hit, attacker_position):
 			return
 		body_capability["invincible"] = true
 		InvincibleTimer.start()
-		lose_control(invincible_time / 2.0)#失去控制（受击后的硬直）
 	#print("old life is",life)
 	if alive == false:	# 如果没有存活，则退出函数
 		return
@@ -145,27 +204,68 @@ func get_damage(damage, is_hit, attacker_position):
 	#print(self.linear_speed)
 	print("cause damage",damage)
 	life -= damage# 减少生命值
-	if life <= 0:
-		life = 0
-		$CollisionShape2D.disabled = true	# 碰撞不可用
-		queue_free()						# 自我销毁
-		alive = false
+	
 	pass
 
-func update_body_capability():
-	if is_losing_control:
-		body_capability["moveable"] = false
-		body_capability["can_use_ability"] = false
-		body_capability["can_control_weapon"] = false
-	else:
-		body_capability["moveable"] = true
-		body_capability["can_use_ability"] = true
-		body_capability["can_control_weapon"] = true
+func _update_alive_state():#检测是否存活
+	if life <= 0:
+		life = 0
+		queue_free()						# 自我销毁
+		alive = false
+
+func lose_capability_moveable(time):
+	timer_capability_moveable.wait_time = timer_capability_moveable.time_left + time
+	timer_capability_moveable.start()
+
+func lose_capability_weapon(time):
+	timer_capability_weapon.wait_time = timer_capability_weapon.time_left + time
+	timer_capability_weapon.start()
+
+func lose_capability_ability(time):
+	timer_capability_ability.wait_time = timer_capability_ability.time_left + time
+	timer_capability_ability.start()
 
 func update_LifeBar():
 	if $LifeBar.value != self.life:
 		$LifeBar.value = life
 
+func _update_max_bear_damage():
+	max_bear_damage = self.max_life / 10.0 + (self.max_life / 5.0) * (stamina / max_stamina)
+
+func _update_body_capability():
+	if take_damage_in_one_second > max_bear_damage and _should_update_get_hit_lose_control:#受击硬直（一秒内所受伤害 大于 可承受伤害max_bear_damage）
+		lose_capability_moveable(0.8)
+		lose_capability_weapon(0.8)
+		lose_capability_ability(0.8)
+		_should_update_get_hit_lose_control = false
+		yield(get_tree().create_timer(1), "timeout")#每一秒更新一次受击硬直的判定
+		_should_update_get_hit_lose_control = true
+	if timer_capability_moveable.time_left > 0:
+		body_capability["moveable"] = false
+	else:
+		body_capability["moveable"] = true
+	if timer_capability_weapon.time_left > 0:
+		body_capability["can_control_weapon"] = false
+	else:
+		body_capability["can_control_weapon"] = true
+	if timer_capability_ability.time_left > 0:
+		body_capability["can_use_ability"] = false
+	else:
+		body_capability["can_use_ability"] = true
+
+func _update_body_attributes():
+	pass
+
+func _take_damage_inspector():#暂时有些小问题，在生物死亡后会报一条错误，但不影响程序运行
+	var old_life = life
+	var _timer = Timer.new()
+	add_child(_timer)
+	_timer.start(1)
+	yield(_timer, "timeout")
+	_timer.queue_free()
+	take_damage_in_one_second = old_life - self.life#过去一秒内受到的伤害
+	#if self.tag == "enemy":
+		#print(take_damage_in_one_second)
 
 func judge_whether_effective_damage(target_global_position):
 	raycast.enabled = true
@@ -183,13 +283,6 @@ func judge_whether_effective_damage(target_global_position):
 		#raycast.enabled = false
 		#raycast.set_collision_mask_bit(6, false)
 		return false
-
-func lose_control(time):
-	#print("lose control")
-	is_losing_control = true
-	yield(get_tree().create_timer(time + last_time),"timeout")
-	is_losing_control = false
-	#print("can control")
 
 func _on_InvincibleTimer_timeout():
 	#print("invincible timer timeout")
@@ -239,7 +332,7 @@ func judge_towards(target_global_position):#判断生物朝向
 
 func update_animation():#更新动画和残影ghost
 	if is_ani:
-		ani.speed_scale = clamp(self.linear_velocity.length() / max_speed, 0.3, 2)
+		ani.speed_scale = clamp(self.linear_velocity.length() / max_speed, 0, 2)
 		if self.body_capability["moveable"] == true:
 			if towards == "right":
 				ani.flip_h = false
@@ -270,7 +363,8 @@ func _creature_init():
 	self.angular_damp = 0
 	self.mode = RigidBody2D.MODE_CHARACTER
 	self.z_index = 1
-	
+	self.contacts_reported = 0
+	self.contact_monitor = false
 	#判断self是否是AnimatedSprite
 	max_speed = $Attributes.max_speed
 	strength = $Attributes.strength
@@ -278,6 +372,8 @@ func _creature_init():
 	max_stamina = $Attributes.max_stamina
 	arm_length = $Attributes.arm_length
 	alert_distance = $Attributes.alert_distance
+	
+	stamina = max_stamina
 	
 	life = max_life
 	$LifeBar.max_value = self.max_life
@@ -298,7 +394,7 @@ func _creature_init():
 	add_child(raycast)
 	raycast.set_collision_mask_bit(0,false)
 	#无敌状态相关#
-	invincible_time = 15.0 / strength
+	invincible_time = 0.2
 	InvincibleTimer = Timer.new()
 	self.add_child(InvincibleTimer)
 	InvincibleTimer.one_shot = true
@@ -308,3 +404,4 @@ func _creature_init():
 func _ghost_init():
 	ghost = preload("res://Assets/SpecialEffects/Ghost/Ghost.tscn").instance()
 	add_child(ghost)
+	ghost.visible = is_ghost_visible

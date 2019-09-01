@@ -23,11 +23,11 @@ animations = [ {
 "speed": 5.0
 } ]
 
-[sub_resource type="CapsuleShape2D" id=3]
+[sub_resource type="CapsuleShape2D" id=2]
 radius = 4.25
 height = 1.35
 
-[sub_resource type="Curve2D" id=4]
+[sub_resource type="Curve2D" id=3]
 bake_interval = 2.0
 _data = {
 "points": PoolVector2Array( 0, 0, 0, 0, 1.09678, -4.96468, 0, 0, 0, 0, 2.32191, -4.70945, 0, 0, 0, 0, 3.34285, -4.09688, 0, 0, 0, 0, 4.31274, -3.17804, 0, 0, 0, 0, 5.1295, -1.90186, 0, 0, 0, 0, 5.33368, -0.77883, 0, 0, 0, 0, 5.07845, 0.0889692, 0, 0, 0, 0, 5.1295, 0.905721, 0, 0, 0, 0, 4.97635, 1.87561, 0, 0, 0, 0, 4.56798, 2.74341, 0, 0, 0, 0, 4.10856, 3.66226, 0, 0, 0, 0, 3.49599, 4.01959, 0, 0, 0, 0, 2.27086, 4.6832, 0, 0, 0, 0, 1.19888, 4.93843, 0, 0, 0, 0, 0.126892, 4.83634, 0, 0, 0, 0, -0.843002, 4.53006, 0, 0, 0, 0, -1.60871, 4.17273, 0, 0, 0, 0, -2.17022, 3.30493, 0, 0, 0, 0, -2.93593, 2.53922, 0, 0, 0, 0, -3.3443, 1.36514, 0, 0, 0, 0, -3.39535, 0.0889692, 0, 0, 0, 0, -3.39535, -1.03406, 0, 0, 0, 0, -3.14012, -1.69768, 0, 0, 0, 0, -2.88488, -2.51443, 0, 0, 0, 0, -2.37441, -3.22908, 0, 0, 0, 0, -1.76185, -3.8927, 0, 0, 0, 0, -1.30242, -4.50526, 0, 0, 0, 0, -0.53672, -4.70945, 0, 0, 0, 0, 0.382126, -4.96468, 0, 0, 0, 0, 0.99469, -5.11782 )
@@ -43,12 +43,12 @@ playing = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2( 1, 0 )
-shape = SubResource( 3 )
+shape = SubResource( 2 )
 script = ExtResource( 5 )
 
 [node name="Margin" type="Path2D" parent="CollisionShape2D"]
 position = Vector2( -1, 0 )
-curve = SubResource( 4 )
+curve = SubResource( 3 )
 
 [node name="Attributes" type="Node" parent="."]
 script = ExtResource( 6 )

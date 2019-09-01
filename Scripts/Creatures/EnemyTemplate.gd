@@ -84,7 +84,10 @@ func _physics_process(delta):
 			ai_state_search()
 	
 	ai_update_weapon_position_and_rotation()
+	
+	
 	#print(ai_state)
+	#print(is_player_in_alert_range)
 #func set_nav(new_nav):
 	#nav = new_nav
 	#update_path()
@@ -164,6 +167,9 @@ func ai_combat_move_ranged():
 func ai_update_weapon_position_and_rotation():
 	if !body_capability["can_control_weapon"]:
 		return
+	if self.has_weapon:
+		if !weapon.is_controllable:
+			return
 	if !is_moving_weapon_with_ability and self.has_weapon:
 		if (weapon.global_position - global_position).length() > 3:
 			var del = clamp(strength - weapon.weight, 3, 20)
@@ -226,7 +232,6 @@ func _enemy_init():
 	self.tag = "enemy"
 	self.add_to_group("enemies")#添加到组enemies中
 	i_am_enemy()
-	self.contacts_reported = 8
 	
 	self.add_child(sight_line)
 	sight_line.set_collision_mask_bit(0,false)
@@ -250,5 +255,5 @@ func _enemy_weapon_init():
 	else:
 		has_weapon = false
 		total_weight = self.weight
-		self.attack_distance = self.arm_length + clamp(self.strength / 5.0, 0, 20)
+		self.attack_distance = self.arm_length + clamp(self.strength, 0, 30)
 		#print(attack_distance)

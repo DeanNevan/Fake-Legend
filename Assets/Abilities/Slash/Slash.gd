@@ -13,6 +13,8 @@ var should_judge := false
 var vector_self_to_target_position := Vector2()
 # Called when the node enters the scene tree for the first time.
 func _ready():
+	use_probability = 0.016
+	
 	life_cost = 0
 	magic_cost = 0
 	stamina_cost = 0
@@ -21,6 +23,8 @@ func _ready():
 	
 	player_control_event = KEY_X
 	launch_ai_state = ["combating"]
+	require_weapon_type = ["melee"]
+	require_body_capability = ["moveable", "can_control_weapon", "can_use_ability"]
 
 func _physics_process(delta):
 	judge_whether_approached_target_position()
@@ -41,12 +45,6 @@ func _update():
 		myself.ai_move(vector_self_to_target_position.normalized(), myself.max_speed / 3.0)
 
 func launch():
-	if !myself.has_weapon:
-		return
-	if myself.has_weapon and myself.weapon.type == "melee":
-		use_probability = 0.016
-	else:
-		return
 	if !.judge_whether_launch():
 		return
 	var del = clamp(myself.strength - myself.weapon.weight, 3, 20)
@@ -54,7 +52,7 @@ func launch():
 		vector_self_to_target_position = myself.vector_self_to_mouse
 	if myself.tag == "enemy":
 		vector_self_to_target_position = myself.vector_self_to_player
-	print("start!!")
+	#print("start!!")
 	var rotate_degree = rand_range(- PI / 2.5, PI / 2.5)
 	while abs(rotate_degree) < 0.5:
 		rotate_degree = rand_range(- PI / 2.5, PI / 2.5)
@@ -69,7 +67,7 @@ func launch():
 	should_judge = false
 	yield(get_tree().create_timer(0.3), "timeout")
 	
-	print("wave!!")
+	#print("wave!!")
 	target_angle = vector_self_to_target_position.angle() - rotate_degree
 	target_direction = Vector2(cos(target_angle), sin(target_angle))
 	target_vector = target_direction * myself.arm_length
@@ -79,7 +77,7 @@ func launch():
 	should_judge = false
 	yield(get_tree().create_timer(0.3), "timeout")
 	
-	print("end!!")
+	#print("end!!")
 	is_launching = false
 	myself.is_moving_self_with_ability = false
 	myself.is_moving_weapon_with_ability = false

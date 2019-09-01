@@ -10,14 +10,14 @@ var length = 0
 var tag : String = "weapon"#player_weapon or enemy_weapon or weapon
 var type : String#melee or ranged or magic
 
-var damage : float = weight * 0.2 + level * 0.2 + value * 0.15
-var collision_tag = {"obtuse":1,"sharp":3}
+var damage : float = weight * 0.15 + level * 0.15 + value * 0.1
+var collision_tag = {"obtuse":1,"sharp":2}
 
-var pos1 = self.global_position
-var pos2 = self.global_position
+var pos1 = Vector2()
+var pos2 = Vector2()
 var linear_speed : Vector2 = pos2 - pos1
-var rot1 = self.global_rotation
-var rot2 = self.global_rotation
+var rot1 = 0
+var rot2 = 0
 var rotate_speed : float = rot2 - rot1
 
 var is_stuck:= false
@@ -81,7 +81,7 @@ func _on_Weapon_body_entered(body,weapon_linear_speed:Vector2,weapon_damage:floa
 	#print("collision_point_angular_speed",collision_point_rotate_speed)
 	#print("body!")
 	var player_position = self.global_position - self.position
-	var damage = collision_point_linear_speed.length() + abs(collision_point_rotate_speed / 2) + weapon_damage + collision_tag[weapon_hit_tag] * 2
+	var damage = (collision_point_linear_speed.length() + abs(collision_point_rotate_speed / 3)) * weapon_damage * collision_tag[weapon_hit_tag]
 	body.get_damage(damage, true, get_parent().global_position)
 
 func i_am_player_weapon():
