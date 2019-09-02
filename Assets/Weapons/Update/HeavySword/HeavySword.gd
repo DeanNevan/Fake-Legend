@@ -6,9 +6,11 @@ extends "res://Scripts/Weapons/WeaponTemplate.gd"
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
+	preload("res://Scripts/Weapons/MeleeWeaponTemplate.gd")
 	level = 3
 	value = 25
 	length = 74
+	weight = 25
 	set_tag_and_type("weapon","melee")
 
 func _on_SharpArea_body_entered(body, weapon_hit_type):

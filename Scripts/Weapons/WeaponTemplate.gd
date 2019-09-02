@@ -10,33 +10,36 @@ var length = 0
 var tag : String = "weapon"#player_weapon or enemy_weapon or weapon
 var type : String#melee or ranged or magic
 
-var damage : float = weight * 0.15 + level * 0.15 + value * 0.1
-var collision_tag = {"obtuse":1,"sharp":2}
+var damage
+var collision_tag = {"obtuse":0.5, "sharp":2}
 
-var pos1 = Vector2()
-var pos2 = Vector2()
-var linear_speed : Vector2 = pos2 - pos1
+
 var rot1 = 0
 var rot2 = 0
 var rotate_speed : float = rot2 - rot1
+
+var weapon_master
 
 var is_stuck:= false
 var is_controllable = true
 onready var margin = $Margin
 
 func _ready():
+	if self.get_parent() != null:
+		weapon_master = get_parent()
 	self.linear_damp = 13
 	self.angular_damp = 0.3
-	print("self damage",damage)
 
 func _process(delta):
-	pos2 = self.global_position
-	self.linear_speed = pos2 - pos1
-	pos1 = pos2
 	#print(self.angular_velocity)
 	#print(self.linear_speed)
 	rot2 = self.global_rotation
-	self.rotate_speed = rot2 - rot1
+	if rot1 * rot2 >= 0:
+		self.rotate_speed = rot2 - rot1
+	elif rot1 > 0 and rot2 < 0:
+		self.rotate_speed = (PI - rot1) + (PI + rot2)
+	else:#rot 1 < 0 and rot2 > 0
+		self.rotate_speed =  (PI - rot2) + (PI + rot1)
 	rot1 = rot2
 
 func _on_Weapon_body_entered(body,weapon_linear_speed:Vector2,weapon_damage:float,weapon_hit_tag:String):
@@ -47,8 +50,6 @@ func _on_Weapon_body_entered(body,weapon_linear_speed:Vector2,weapon_damage:floa
 	if (self.tag == "player_weapon" and body.tag == "enemy") or (self.tag == "enemy_weapon" and body.tag == "player") or self.tag == "weapon":
 		pass
 		#print("!!!!!!!!!!!")
-	elif self.type != "melee":
-		return
 	else:
 		return
 	#emit_signal("hit_body",body.global_position)
@@ -81,7 +82,15 @@ func _on_Weapon_body_entered(body,weapon_linear_speed:Vector2,weapon_damage:floa
 	#print("collision_point_angular_speed",collision_point_rotate_speed)
 	#print("body!")
 	var player_position = self.global_position - self.position
-	var damage = (collision_point_linear_speed.length() + abs(collision_point_rotate_speed / 3)) * weapon_damage * collision_tag[weapon_hit_tag]
+	var damage = ((collision_point_linear_speed - body.linear_speed).length() / 2 + abs(collision_point_rotate_speed / 3)) * weapon_damage * collision_tag[weapon_hit_tag]
+	if damage > 50:
+		print("匪夷所思的高额伤害！伤害值为：", damage)
+		print("武器上的碰撞点线速度为：", collision_point_linear_speed)
+		print("武器上的碰撞点半径为：", collision_point_radius)
+		print("武器上的碰撞点角速度为：", rotate_speed)
+		print("武器上的碰撞点旋转速度为", collision_point_rotate_speed)
+		print("受击者的线速度为：", body.linear_speed)
+	
 	body.get_damage(damage, true, get_parent().global_position)
 
 func i_am_player_weapon():

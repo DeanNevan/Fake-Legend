@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/viking_sword.png-b168bd3375b5be372265ed7d6084f95f.stex"
+path="res://.import/elfin_wing_shoot_5.png-e62213f15b70d1df9692073980a5c0fd.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/Art/Weapons/Update/VikingSword/viking_sword.png"
-dest_files=[ "res://.import/viking_sword.png-b168bd3375b5be372265ed7d6084f95f.stex" ]
+source_file="res://Assets/Art/Weapons/Update/Ranged/ElfinWing/elfin_wing_shoot_5.png"
+dest_files=[ "res://.import/elfin_wing_shoot_5.png-e62213f15b70d1df9692073980a5c0fd.stex" ]
 
 [params]
 
@@ -20,7 +20,7 @@ compress/hdr_mode=0
 compress/bptc_ldr=0
 compress/normal_map=0
 flags/repeat=0
-flags/filter=true
+flags/filter=false
 flags/mipmaps=false
 flags/anisotropic=false
 flags/srgb=2

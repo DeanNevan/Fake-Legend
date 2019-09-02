@@ -110,7 +110,7 @@ func _physics_process(delta):
 	if self.body_capability["can_use_ability"]:
 		abilities.launch_abilities()
 	
-	if self.linear_velocity.length() >= max_speed:
+	if self.linear_velocity.length() >= max_speed and body_capability["moveable"]:
 		if restart_ghost:
 			restart_ghost = false
 			ghost.restart()
@@ -202,7 +202,6 @@ func get_damage(damage, is_hit, attacker_position):
 		return
 	#print(collision_point_linear_speed)
 	#print(self.linear_speed)
-	print("cause damage",damage)
 	life -= damage# 减少生命值
 	
 	pass

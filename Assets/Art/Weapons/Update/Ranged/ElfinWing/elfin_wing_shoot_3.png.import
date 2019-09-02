@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/long_sword.png-aa83ff03dc13412f61128a478756cf57.stex"
+path="res://.import/elfin_wing_shoot_3.png-91f2c2cfac3ec3d816cfd7a6a5fca7b5.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/Art/Weapons/Update/LongSword/long_sword.png"
-dest_files=[ "res://.import/long_sword.png-aa83ff03dc13412f61128a478756cf57.stex" ]
+source_file="res://Assets/Art/Weapons/Update/Ranged/ElfinWing/elfin_wing_shoot_3.png"
+dest_files=[ "res://.import/elfin_wing_shoot_3.png-91f2c2cfac3ec3d816cfd7a6a5fca7b5.stex" ]
 
 [params]
 
@@ -20,7 +20,7 @@ compress/hdr_mode=0
 compress/bptc_ldr=0
 compress/normal_map=0
 flags/repeat=0
-flags/filter=true
+flags/filter=false
 flags/mipmaps=false
 flags/anisotropic=false
 flags/srgb=2

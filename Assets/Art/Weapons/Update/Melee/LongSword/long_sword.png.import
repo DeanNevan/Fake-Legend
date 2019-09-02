@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/heavy_steel_sword.png-04b388b4ddc6597dc6af0badea69cde7.stex"
+path="res://.import/long_sword.png-dc82ec959e9ef53afe530f6524f11122.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/Art/Weapons/Update/HeavySword/heavy_steel_sword.png"
-dest_files=[ "res://.import/heavy_steel_sword.png-04b388b4ddc6597dc6af0badea69cde7.stex" ]
+source_file="res://Assets/Art/Weapons/Update/Melee/LongSword/long_sword.png"
+dest_files=[ "res://.import/long_sword.png-dc82ec959e9ef53afe530f6524f11122.stex" ]
 
 [params]
 
@@ -20,7 +20,7 @@ compress/hdr_mode=0
 compress/bptc_ldr=0
 compress/normal_map=0
 flags/repeat=0
-flags/filter=false
+flags/filter=true
 flags/mipmaps=false
 flags/anisotropic=false
 flags/srgb=2

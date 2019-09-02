@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/katana.png-88de9ccb3417804519e6895010f3771f.stex"
+path="res://.import/elfin_wing_release_1.png-60adc79a0de229f5fc0a30d04aaef877.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/Art/Weapons/Update/Katana/katana.png"
-dest_files=[ "res://.import/katana.png-88de9ccb3417804519e6895010f3771f.stex" ]
+source_file="res://Assets/Art/Weapons/Update/Ranged/ElfinWing/elfin_wing_release_1.png"
+dest_files=[ "res://.import/elfin_wing_release_1.png-60adc79a0de229f5fc0a30d04aaef877.stex" ]
 
 [params]
 
@@ -20,7 +20,7 @@ compress/hdr_mode=0
 compress/bptc_ldr=0
 compress/normal_map=0
 flags/repeat=0
-flags/filter=true
+flags/filter=false
 flags/mipmaps=false
 flags/anisotropic=false
 flags/srgb=2

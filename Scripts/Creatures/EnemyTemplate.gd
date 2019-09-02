@@ -59,7 +59,7 @@ func _physics_process(delta):
 	distance_self_to_player = vector_self_to_player.length()
 	if distance_self_to_player <= alert_distance:
 		sight_line.cast_to = player.global_position - self.global_position
-		sight_line.force_raycast_update()
+		#sight_line.force_raycast_update()
 		is_player_in_alert_range = true
 	else:
 		sight_line.enabled = false

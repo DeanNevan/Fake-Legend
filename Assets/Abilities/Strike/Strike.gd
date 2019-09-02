@@ -29,7 +29,6 @@ func _update():
 
 func _on_body_entered(body):
 	if body.tag != myself.tag:
-		print(body.tag)
 		if body.has_method("get_damage"):
 			var damage = (body.linear_speed - myself.linear_speed).length() / 3.0 * clamp((myself.strength - myself.weight) / 2.0 , 3, 8)
 			body.get_damage(damage, true, myself.global_position)

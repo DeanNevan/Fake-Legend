@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/sabre.png-ea2cce5ff85ba5e87e19e9a00d326ad4.stex"
+path="res://.import/elfin_wing_release_2.png-e37de1dabafe96867f9655f2073a15bb.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/Art/Weapons/Update/Sabre/sabre.png"
-dest_files=[ "res://.import/sabre.png-ea2cce5ff85ba5e87e19e9a00d326ad4.stex" ]
+source_file="res://Assets/Art/Weapons/Update/Ranged/ElfinWing/elfin_wing_release_2.png"
+dest_files=[ "res://.import/elfin_wing_release_2.png-e37de1dabafe96867f9655f2073a15bb.stex" ]
 
 [params]
 
@@ -20,7 +20,7 @@ compress/hdr_mode=0
 compress/bptc_ldr=0
 compress/normal_map=0
 flags/repeat=0
-flags/filter=true
+flags/filter=false
 flags/mipmaps=false
 flags/anisotropic=false
 flags/srgb=2

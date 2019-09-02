@@ -23,7 +23,7 @@ func _physics_process(delta):
 	judge_towards(get_global_mouse_position())#判断朝向
 	update_animation()#更新动画
 	_judge_control_direcition()#判断wasd所控制的方向
-	if Input.is_action_just_pressed("control_mouse_right_click"):
+	if Input.is_action_just_pressed("control_mouse_middle_click"):
 		self.strength = self.strength + 1
 		print("plus strength!",strength)
 	if body_capability["moveable"] == true and !self.is_moving_self_with_ability: 
@@ -34,13 +34,14 @@ func _physics_process(delta):
 		#weapon.position = weapon.position
 	#print(wave_weapon_vector)
 	#print(wave_weapon_speed)
-	if has_weapon and weapon.type == "melee" and !self.is_moving_weapon_with_ability and body_capability["can_control_weapon"]:
+	if has_weapon and weapon.type == "melee" and !self.is_moving_weapon_with_ability and body_capability["can_control_weapon"] and weapon.is_controllable:#拥有melee武器，武器并未被能力控制移动和旋转，自己可以控制武器，武器可以控制
 		if Input.is_action_pressed("control_mouse_left_click"):
-			rotate_weapon((self.strength - weapon.weight) * 0.7, vector_weapon_to_mouse.normalized(), delta)
-		wave_weapon_vector = get_wave_weapon_vector()
-		wave_weapon_speed = get_wave_weapon_speed()
-		wave_weapon_direction = wave_weapon_vector.normalized()
-		wave_weapon(wave_weapon_direction, wave_weapon_speed)
+			_update_wave_weapon_vector(true)
+		else:
+			_update_wave_weapon_vector(false)
+		_update_wave_weapon_speed()
+		wave_weapon(wave_weapon_vector.normalized(), wave_weapon_speed)
+		rotate_weapon((self.strength - weapon.weight) * 0.7, vector_weapon_to_mouse.normalized(), delta)
 		if weapon.position.length() > arm_length * 1.5:
 			weapon.is_stuck = true
 		else:
@@ -123,32 +124,29 @@ func _judge_control_direcition():#判断键盘wasd所控制的方向
 	if Input.is_action_pressed("control_up"):
 		control_direction.y = -1
 
-func get_wave_weapon_vector():
-	if Input.is_action_pressed("control_mouse_left_click"):
-		var wave_length = clamp(vector_self_to_mouse.length(), 0, arm_length)
-		var target_postion = self.global_position + (vector_self_to_mouse).normalized() * wave_length
-		var wave_weapon_vector = target_postion - weapon.get_global_position()
-		if wave_weapon_vector.length() <= 1.5:
-			return Vector2()
-		#print(vector_self_to_mouse)
-		#print(wave_length)
-		#print(target_postion)
-		#print(wave_weapon_vector)
-		return wave_weapon_vector
-	elif weapon.position.length() >= 3:
-		var return_vector = - weapon.position * 2
-		return return_vector
+func _update_wave_weapon_vector(is_controlling = true):
+	var wave_length = clamp(vector_self_to_mouse.length(), 0, arm_length)
+	var target_postion = self.global_position + (vector_self_to_mouse).normalized() * wave_length
+	
+	if is_controlling:
+		if (target_postion - weapon.get_global_position()).length() <= 1.5:
+			wave_weapon_vector = Vector2()
+		else:
+			wave_weapon_vector = target_postion - weapon.get_global_position()
 	else:
-		weapon.position = Vector2()
-		return Vector2()
+		if weapon.position.length() >= 2:
+			wave_weapon_vector = - weapon.position * 2
+		else:
+			weapon.position = Vector2()
+			wave_weapon_vector = Vector2()
 
-func get_wave_weapon_speed():
+func _update_wave_weapon_speed():
 	#print("strength",strength)
 	#print("weight",weight)
 	var del = clamp(strength - weapon.weight, 3, 20)
 	var speed = del * 1.2 + wave_weapon_vector.length() * 1.2
 	#print("speed is",speed)
-	return speed
+	wave_weapon_speed = speed
 
 func dodge(direction):#冲刺
 	if body_capability["moveable"] == true:

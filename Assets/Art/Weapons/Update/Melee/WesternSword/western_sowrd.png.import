@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/steel_sword.png-2610eae832161031310bca4defc340ef.stex"
+path="res://.import/western_sowrd.png-356b5836bc76caa3ac3f03fb9ab2e3ea.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/Art/Weapons/Update/SteelSword/steel_sword.png"
-dest_files=[ "res://.import/steel_sword.png-2610eae832161031310bca4defc340ef.stex" ]
+source_file="res://Assets/Art/Weapons/Update/Melee/WesternSword/western_sowrd.png"
+dest_files=[ "res://.import/western_sowrd.png-356b5836bc76caa3ac3f03fb9ab2e3ea.stex" ]
 
 [params]
 
