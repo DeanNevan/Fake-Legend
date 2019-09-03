@@ -1,4 +1,4 @@
-extends "res://Scripts/Weapons/WeaponTemplate.gd"
+extends "res://Scripts/Weapons/MeleeWeaponTemplate.gd"
 
 # Declare member variables here. Examples:
 # var a = 2
@@ -11,6 +11,7 @@ func _ready():
 	value = 25
 	length = 74
 	weight = 25
+	update_basic_damage()
 	set_tag_and_type("weapon","melee")
 
 func _on_SharpArea_body_entered(body, weapon_hit_type):

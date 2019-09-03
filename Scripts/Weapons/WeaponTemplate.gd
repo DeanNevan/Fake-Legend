@@ -5,12 +5,13 @@ signal hit_sth
 #一些武器基本属性
 var level = 0
 var value = 0
-var length = 0
+
 
 var tag : String = "weapon"#player_weapon or enemy_weapon or weapon
 var type : String#melee or ranged or magic
+var ranged_weapon_type : String#bow, crossbow, gun
 
-var damage
+var basic_damage
 var collision_tag = {"obtuse":0.5, "sharp":2}
 
 
@@ -22,25 +23,32 @@ var weapon_master
 
 var is_stuck:= false
 var is_controllable = true
+var is_controlling_self_with_ability := false
+var is_controlling_master_with_ability := false
+var is_controlling = false
 onready var margin = $Margin
 
 func _ready():
-	if self.get_parent() != null:
-		weapon_master = get_parent()
-	self.linear_damp = 13
-	self.angular_damp = 0.3
+	weapon_init()
 
 func _process(delta):
 	#print(self.angular_velocity)
 	#print(self.linear_speed)
 	rot2 = self.global_rotation
-	if rot1 * rot2 >= 0:
+	#print(self.global_rotation)
+	if rot1 * rot2 >= 0 or (abs(rot1) < (PI / 2) and abs(rot2) < (PI / 2)):
 		self.rotate_speed = rot2 - rot1
 	elif rot1 > 0 and rot2 < 0:
 		self.rotate_speed = (PI - rot1) + (PI + rot2)
 	else:#rot 1 < 0 and rot2 > 0
 		self.rotate_speed =  (PI - rot2) + (PI + rot1)
 	rot1 = rot2
+	
+	if self.weapon_master.has_method("_creature_init"):
+		if self.global_rotation < 0:
+			self.z_index = -1
+		else:
+			self.z_index = 1
 
 func _on_Weapon_body_entered(body,weapon_linear_speed:Vector2,weapon_damage:float,weapon_hit_tag:String):
 	#print("weapon_hit_tag_is",weapon_hit_tag)
@@ -93,6 +101,9 @@ func _on_Weapon_body_entered(body,weapon_linear_speed:Vector2,weapon_damage:floa
 	
 	body.get_damage(damage, true, get_parent().global_position)
 
+func update_basic_damage():
+	basic_damage = weight * 0.15 + level * 0.15 + value * 0.1
+
 func i_am_player_weapon():
 	clear_collision_bit(self)
 	self.angular_damp = 8
@@ -125,7 +136,7 @@ func i_am_enemy_weapon():
 	self.tag = "enemy_weapon"
 	self.set_collision_mask_bit(0,true)
 	self.set_collision_mask_bit(2,true)
-	self.set_collision_mask_bit(5,true)
+	self.set_collision_mask_bit(4,true)
 	self.set_collision_mask_bit(6,true)
 	self.set_collision_layer_bit(3,true)
 	if self.has_node("ObtuseArea"):
@@ -133,7 +144,7 @@ func i_am_enemy_weapon():
 		clear_collision_bit(obtuse_area)
 		obtuse_area.set_collision_mask_bit(0,true)
 		obtuse_area.set_collision_mask_bit(2,true)
-		obtuse_area.set_collision_mask_bit(5,true)
+		obtuse_area.set_collision_mask_bit(4,true)
 		obtuse_area.set_collision_mask_bit(6,true)
 		obtuse_area.set_collision_layer_bit(3,true)
 	if self.has_node("SharpArea"):
@@ -141,7 +152,7 @@ func i_am_enemy_weapon():
 		clear_collision_bit(sharp_area)
 		sharp_area.set_collision_mask_bit(0,true)
 		sharp_area.set_collision_mask_bit(2,true)
-		sharp_area.set_collision_mask_bit(5,true)
+		sharp_area.set_collision_mask_bit(4,true)
 		sharp_area.set_collision_mask_bit(6,true)
 		sharp_area.set_collision_layer_bit(3,true)
 
@@ -153,3 +164,10 @@ func clear_collision_bit(target):
 func set_tag_and_type(tag:String,type:String):
 	self.tag = tag
 	self.type = type
+
+func weapon_init():
+	if self.get_parent().has_method("ai_move"):
+		weapon_master = get_parent()
+	
+	self.linear_damp = 0.3 if weapon_master == null else weapon_master.linear_damp
+	self.angular_damp = 0.3

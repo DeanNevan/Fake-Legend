@@ -34,9 +34,7 @@ var last_damage = 0
 
 #挥舞武器相关变量
 var weapon_speed_bonus = 1
-var wave_weapon_vector := Vector2()
-var wave_weapon_speed = 0
-var wave_weapon_direction := Vector2()
+
 
 var body_capability := {"invincible" : false, "moveable" : true, "can_use_ability" : true, "can_control_weapon" : true}
 var last_time = 0
@@ -71,8 +69,8 @@ var _update_ago_position := false
 var _update_ago_position_time = dodge_time / 2
 var ago_position := Vector2()
 
-var is_moving_self_with_ability := false
-var is_moving_weapon_with_ability := false
+var is_controlling_self_with_ability := false
+var is_controlling_weapon_with_ability := false
 
 var timer_capability_moveable#moveable的计时器
 var timer_capability_weapon#can_control_weapon的计时器
@@ -111,6 +109,13 @@ func _physics_process(delta):
 		abilities.launch_abilities()
 	
 	if self.linear_velocity.length() >= max_speed and body_capability["moveable"]:
+		if self.is_ani:
+			if !ani.visible:
+				ghost.visible = false
+				return
+		elif !spr.visible:
+			ghost.visible = false
+			return
 		if restart_ghost:
 			restart_ghost = false
 			ghost.restart()
@@ -118,12 +123,6 @@ func _physics_process(delta):
 	else:
 		restart_ghost = true
 		ghost.visible = false
-	
-	if self.has_weapon:
-		if weapon.global_position.y < self.global_position.y:
-			weapon.z_index = -1
-		else:
-			weapon.z_index = 1
 	
 	pos2 = self.global_position
 	self.linear_speed = pos2 - pos1
@@ -149,7 +148,7 @@ func _flash():
 		else:
 			spr.visible = !spr.visible
 		_should_update_flash = false
-		yield(get_tree().create_timer(0.05), "timeout")
+		yield(get_tree().create_timer(0.03), "timeout")
 		flash_count += 1
 		_should_update_flash = true
 	else:
@@ -166,24 +165,6 @@ func rotate_weapon(speed, target_direction, delta):
 	#print("rotate speed is",speed)
 	var present_direction = Vector2(1, 0).rotated(weapon.global_rotation)
 	weapon.global_rotation = present_direction.linear_interpolate(target_direction, speed * delta).angle()
-
-func wave_weapon(direction, speed):
-	if !weapon.is_controllable:
-		return
-	if !has_weapon:
-		return
-	if !self.body_capability["can_control_weapon"]:
-		return
-	#if weapon.position.length() <= 2:
-		#weapon_speed_bonus = clamp((strength - weapon.weight) / 4, 1.5, 8.0)
-	#print(weapon_speed_bonus)
-	#weapon_speed_bonus = weapon_speed_bonus * 0.9
-	#if weapon_speed_bonus <=1:
-		#weapon_speed_bonus = 1
-	if speed <= 3:
-		return
-	direction = direction.normalized()
-	weapon.linear_velocity += direction * speed * 0.8
 
 func get_damage(damage, is_hit, attacker_position):
 	#print("time is",invincible_time)
@@ -346,16 +327,16 @@ func i_am_enemy():
 	self.set_collision_layer_bit(1, true)
 	self.set_collision_mask_bit(0, true)
 	self.set_collision_mask_bit(2, true)
-	self.set_collision_mask_bit(5, true)
+	self.set_collision_mask_bit(4, true)
 	self.set_collision_mask_bit(6, true)
 
 func i_am_player():
 	self.set_collision_layer_bit(0, true)
 	self.set_collision_mask_bit(1, true)
 	self.set_collision_mask_bit(3, true)
-	self.set_collision_mask_bit(4, true)
 	self.set_collision_mask_bit(5, true)
 	self.set_collision_mask_bit(6, true)
+	self.set_collision_mask_bit(7, true)
 
 func _creature_init():
 	self.linear_damp = 10

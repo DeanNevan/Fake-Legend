@@ -128,7 +128,7 @@ func ai_state_combat():
 	if distance_self_to_player > attack_distance * 1.8:
 		ai_state = "catching"
 	
-	if !is_moving_self_with_ability and body_capability["moveable"] == true:
+	if !is_controlling_self_with_ability and body_capability["moveable"] == true:
 		match self.combat_mode:
 			"front":
 				ai_combat_move_front()
@@ -165,16 +165,16 @@ func ai_combat_move_ranged():
 	pass
 
 func ai_update_weapon_position_and_rotation():
-	if !body_capability["can_control_weapon"]:
+	if !body_capability["can_control_weapon"] or !self.has_weapon:
 		return
 	if self.has_weapon:
 		if !weapon.is_controllable:
 			return
-	if !is_moving_weapon_with_ability and self.has_weapon:
-		if (weapon.global_position - global_position).length() > 3:
+	if !is_controlling_weapon_with_ability and !weapon.is_controlling_self_with_ability:
+		if (weapon.global_position - global_position).length() > 3 and weapon.type == "melee":
 			var del = clamp(strength - weapon.weight, 3, 20)
 			var speed = del * 1.2 + weapon.position.length() * 1.2
-			wave_weapon(global_position - weapon.global_position, speed)
+			weapon.wave_weapon(global_position - weapon.global_position, speed)
 		if _prepare_weapon:
 			_prepare_weapon = false
 			if ai_state == "catching" or ai_state == "combating":

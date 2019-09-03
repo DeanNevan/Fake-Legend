@@ -16,6 +16,7 @@ func _ready():
 	launch_ai_state = ["combating"]
 	require_weapon_type = []
 	require_body_capability = ["moveable", "can_use_ability"]
+	need_self = true
 	
 	myself.connect("body_entered", self, "_on_body_entered")
 
@@ -24,7 +25,7 @@ func _physics_process(delta):
 
 func _update():
 	if is_launching:
-		myself.is_moving_self_with_ability = true
+		myself.is_controlling_self_with_ability = true
 		myself.linear_velocity = direction * speed
 
 func _on_body_entered(body):
@@ -72,7 +73,7 @@ func launch():
 	speed = 0
 	myself.linear_velocity = Vector2()
 	is_launching = false
-	myself.is_moving_self_with_ability = false
+	myself.is_controlling_self_with_ability = false
 	myself.contact_monitor = false
 	myself.contacts_reported = 0
 	#print("stop stike!!!")

@@ -6,19 +6,29 @@ var vector_weapon_to_mouse = Vector2()
 
 var control_direction := Vector2()#键盘按键wasd所指方向
 
-var is_controlling := true
+
 var is_control_pressed := false
 var is_dodging := false
 
-
+var is_key_v_pressed = false
 
 func _ready():
 	preload("res://Scripts/Creatures/CreatureTemplate.gd")
+	#print(get_node("/root").player.name)
 	_player_init()
 	_player_weapon_init()
 	#print("total weight is", total_weight)
 
 func _physics_process(delta):
+	if Input.is_key_pressed(KEY_V) and !is_key_v_pressed:
+		is_key_v_pressed = true
+		if is_ani:
+			ani.visible = !ani.visible
+		else:
+			spr.visible = !ani.visible
+	elif !Input.is_key_pressed(KEY_V):
+		is_key_v_pressed = false
+	
 	_update_vector_of_player_mouse_weapon()
 	judge_towards(get_global_mouse_position())#判断朝向
 	update_animation()#更新动画
@@ -26,7 +36,7 @@ func _physics_process(delta):
 	if Input.is_action_just_pressed("control_mouse_middle_click"):
 		self.strength = self.strength + 1
 		print("plus strength!",strength)
-	if body_capability["moveable"] == true and !self.is_moving_self_with_ability: 
+	if body_capability["moveable"] == true and !self.is_controlling_self_with_ability: 
 		_smooth_control_move()
 	if Input.is_key_pressed(KEY_SHIFT):
 		dodge(control_direction.normalized())
@@ -34,14 +44,12 @@ func _physics_process(delta):
 		#weapon.position = weapon.position
 	#print(wave_weapon_vector)
 	#print(wave_weapon_speed)
-	if has_weapon and weapon.type == "melee" and !self.is_moving_weapon_with_ability and body_capability["can_control_weapon"] and weapon.is_controllable:#拥有melee武器，武器并未被能力控制移动和旋转，自己可以控制武器，武器可以控制
+	if has_weapon and !self.is_controlling_weapon_with_ability and body_capability["can_control_weapon"] and weapon.is_controllable:#拥有melee武器，武器并未被能力控制移动和旋转，自己可以控制武器，武器可以控制
 		if Input.is_action_pressed("control_mouse_left_click"):
-			_update_wave_weapon_vector(true)
+			weapon.is_controlling = true
 		else:
-			_update_wave_weapon_vector(false)
-		_update_wave_weapon_speed()
-		wave_weapon(wave_weapon_vector.normalized(), wave_weapon_speed)
-		rotate_weapon((self.strength - weapon.weight) * 0.7, vector_weapon_to_mouse.normalized(), delta)
+			weapon.is_controlling = false
+		rotate_weapon((self.strength - weapon.weight) * 0.7, vector_self_to_mouse.normalized(), delta)
 		if weapon.position.length() > arm_length * 1.5:
 			weapon.is_stuck = true
 		else:
@@ -124,29 +132,7 @@ func _judge_control_direcition():#判断键盘wasd所控制的方向
 	if Input.is_action_pressed("control_up"):
 		control_direction.y = -1
 
-func _update_wave_weapon_vector(is_controlling = true):
-	var wave_length = clamp(vector_self_to_mouse.length(), 0, arm_length)
-	var target_postion = self.global_position + (vector_self_to_mouse).normalized() * wave_length
-	
-	if is_controlling:
-		if (target_postion - weapon.get_global_position()).length() <= 1.5:
-			wave_weapon_vector = Vector2()
-		else:
-			wave_weapon_vector = target_postion - weapon.get_global_position()
-	else:
-		if weapon.position.length() >= 2:
-			wave_weapon_vector = - weapon.position * 2
-		else:
-			weapon.position = Vector2()
-			wave_weapon_vector = Vector2()
 
-func _update_wave_weapon_speed():
-	#print("strength",strength)
-	#print("weight",weight)
-	var del = clamp(strength - weapon.weight, 3, 20)
-	var speed = del * 1.2 + wave_weapon_vector.length() * 1.2
-	#print("speed is",speed)
-	wave_weapon_speed = speed
 
 func dodge(direction):#冲刺
 	if body_capability["moveable"] == true:
@@ -196,7 +182,8 @@ func _player_weapon_init():
 		#weapon.linear_damp = clamp(self.strength - weapon.weight + 2, 12, 18)
 		#weapon.angular_damp = clamp(self.strength  - weapon.weight - 1, 3, 10)
 		total_weight = self.weight + weapon.weight#人物与武器总重
-		self.attack_distance = self.arm_length + weapon.length
+		if weapon.type == "melee":
+			self.attack_distance = self.arm_length + weapon.length + clamp(self.strength / 5.0, 0, 20)
 	else:
 		has_weapon = false
 		total_weight = self.weight

@@ -7,6 +7,8 @@ var magic_cost
 var level
 var myself
 
+var need_weapon = false
+var need_self = false
 
 var is_launching := false
 var launch_ai_state := []
@@ -34,8 +36,8 @@ func _physics_process(delta):
 
 func break_ability():
 	is_launching = false
-	myself.is_moving_self_with_ability = false
-	myself.is_moving_weapon_with_ability = false
+	myself.is_controlling_self_with_ability = false
+	myself.is_controlling_weapon_with_ability = false
 	reset_timer = true
 
 func _take_damage_inspector():
@@ -66,6 +68,16 @@ func _time_inspector():
 
 func judge_whether_launch():
 	life_when_start_ability = myself.life
+	
+	if need_self:
+		if myself.has_weapon:
+			if myself.weapon.is_controlling_master_with_ability:
+				return false
+		if myself.is_controlling_self_with_ability:
+			return false
+	if need_weapon and myself.has_weapon:
+		if myself.weapon.is_controlling_self_with_ability or myself.is_controlling_weapon_with_ability:
+			return false
 	
 	if require_weapon_type.size() != 0:
 		var is_match_require_weapon = false

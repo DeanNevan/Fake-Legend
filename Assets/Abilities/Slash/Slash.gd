@@ -14,6 +14,8 @@ var vector_self_to_target_position := Vector2()
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	use_probability = 0.016
+	need_weapon = true
+	need_self = true
 	
 	life_cost = 0
 	magic_cost = 0
@@ -38,9 +40,9 @@ func judge_whether_approached_target_position():
 
 func _update():
 	if self.is_launching:
-		myself.is_moving_self_with_ability = true
-		myself.is_moving_weapon_with_ability = true
-		myself.wave_weapon((target_vector - (myself.weapon.global_position - myself.global_position)).normalized(), speed)
+		myself.is_controlling_self_with_ability = true
+		myself.is_controlling_weapon_with_ability = true
+		myself.weapon.wave_weapon((target_vector - (myself.weapon.global_position - myself.global_position)).normalized(), speed)
 		myself.rotate_weapon((myself.strength - myself.weapon.weight) * 0.7, (myself.weapon.global_position - myself.global_position).normalized(), get_physics_process_delta_time())
 		myself.ai_move(vector_self_to_target_position.normalized(), myself.max_speed / 3.0)
 
@@ -79,5 +81,5 @@ func launch():
 	
 	#print("end!!")
 	is_launching = false
-	myself.is_moving_self_with_ability = false
-	myself.is_moving_weapon_with_ability = false
+	myself.is_controlling_self_with_ability = false
+	myself.is_controlling_weapon_with_ability = false
