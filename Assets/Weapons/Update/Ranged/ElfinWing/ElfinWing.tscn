@@ -1,6 +1,6 @@
 [gd_scene load_steps=13 format=2]
 
-[ext_resource path="res://Assets/Weapons/Update/Ranged/ElfinWing.gd" type="Script" id=1]
+[ext_resource path="res://Assets/Weapons/Update/Ranged/ElfinWing/ElfinWing.gd" type="Script" id=1]
 [ext_resource path="res://Assets/Art/Weapons/Update/Ranged/ElfinWing/elfin_wing_idle_1.png" type="Texture" id=2]
 [ext_resource path="res://Assets/Art/Weapons/Update/Ranged/ElfinWing/elfin_wing_release_1.png" type="Texture" id=3]
 [ext_resource path="res://Assets/Art/Weapons/Update/Ranged/ElfinWing/elfin_wing_release_2.png" type="Texture" id=4]

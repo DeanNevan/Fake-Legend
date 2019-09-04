@@ -15,6 +15,8 @@ var linear_speed : Vector2 = pos2 - pos1
 
 var life_time = 2#可以飞行的时间
 
+var is_entered = false
+var is_freeing = false
 var is_flying = false
 var is_being_pulled = true#弓箭专用
 var should_update_pull_string = true
@@ -26,6 +28,8 @@ func _ready():
 	_projectile_init()
 
 func _process(delta):
+	if is_freeing:
+		return
 	pos2 = self.global_position
 	self.linear_speed = pos2 - pos1
 	pos1 = pos2
@@ -44,21 +48,35 @@ func _process(delta):
 		_free()
 
 func _on_body_entered(body):
-	if body.tag == "TileMap":
-		_free()
-	if body.tag != weapon.weapon_master.tag and body.has_method("get_damage"):
-		var damage = ((self.linear_speed - body.linear_speed).length() / 2.5) * (basic_damage + weapon.basic_damage)
-		body.get_damage(((self.linear_speed - body.linear_speed).length() / 2.5) * (basic_damage + weapon.basic_damage), true, self.global_position - body.global_position)
-		print("shoot target!!!", damage)
-		_free()
+	if !is_entered:
+		is_entered = true
+		if body.tag == "TileMap":
+			self.set_collision_mask_bit(6, false)
+			self.linear_velocity = Vector2()
+			timer_flying.paused = true
+			timer_flying.wait_time = life_time
+			yield(get_tree().create_timer(0.4), "timeout")
+			self.set_collision_mask_bit(6,true)
+			self.linear_velocity = Vector2()
+			yield(get_tree().create_timer(0.5), "timeout")
+			_free()
+			return
+		if body.tag != weapon.weapon_master.tag and body.has_method("get_damage"):
+			var damage = ((self.linear_speed - body.linear_speed).length() / 2.5) * (basic_damage + weapon.basic_damage)
+			body.get_damage(((self.linear_speed - body.linear_speed).length() / 2.5) * (basic_damage + weapon.basic_damage), true, self.global_position - body.global_position)
+			print("shoot target!!!", damage)
+			_free()
 
 func _free():
+	is_freeing = true
 	self.queue_free()
 
 func update_basic_damage():
 	basic_damage = weight * 0.15 + level * 0.15 + value * 0.1
 
-func start_fly():
+func start_fly(velocity):
+	self.linear_velocity = velocity
+	timer_flying.paused = false
 	timer_flying.start(life_time)
 	is_being_pulled = false
 	should_update_pull_string = true
@@ -85,16 +103,20 @@ func clear_collision_bit(target):
 		target.set_collision_layer_bit(i, false)
 
 func _projectile_init():
+	self.can_sleep = false
+	
 	clear_collision_bit(self)
 	
 	self.linear_damp = 0.5
-	self.angular_damp = 0.5
+	self.angular_damp = 3
 	self.connect("body_entered", self, "_on_body_entered")
 	self.contact_monitor = true
-	self.contacts_reported = 3
+	self.contacts_reported = 5
 	
 	timer_flying = Timer.new()
 	timer_flying.one_shot = true
 	add_child(timer_flying)
-	timer_flying.start(life_time)
+	timer_flying.wait_time = life_time
+	timer_flying.start()
+	timer_flying.paused = true
 	

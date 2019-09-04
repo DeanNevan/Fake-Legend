@@ -3,7 +3,7 @@
 [ext_resource path="res://Main.gd" type="Script" id=1]
 [ext_resource path="res://Assets/Creatures/Update/Violet/Violet.tscn" type="PackedScene" id=2]
 [ext_resource path="res://Scripts/Creatures/PlayerTemplate.gd" type="Script" id=3]
-[ext_resource path="res://Assets/Weapons/Update/Ranged/ElfinWing.tscn" type="PackedScene" id=4]
+[ext_resource path="res://Assets/Weapons/Update/Ranged/ElfinWing/ElfinWing.tscn" type="PackedScene" id=4]
 [ext_resource path="res://Assets/Rooms/Update/TestRoom/TestRoom1/TestRoom1.tscn" type="PackedScene" id=5]
 [ext_resource path="res://Assets/Creatures/Update/Bat/Bat.tscn" type="PackedScene" id=6]
 [ext_resource path="res://Scripts/Creatures/EnemyTemplate.gd" type="Script" id=7]
@@ -71,10 +71,6 @@ script = ExtResource( 7 )
 position = Vector2( -70, 266.938 )
 script = ExtResource( 7 )
 
-[node name="Bat21" parent="Room/TestRoom1/Enemy" instance=ExtResource( 6 )]
-position = Vector2( -120, 262 )
-script = ExtResource( 7 )
-
 [node name="Bat22" parent="Room/TestRoom1/Enemy" instance=ExtResource( 6 )]
 position = Vector2( 20, 270 )
 script = ExtResource( 7 )
@@ -82,7 +78,8 @@ script = ExtResource( 7 )
 [node name="Label" type="Label" parent="."]
 margin_left = -260.0
 margin_top = 32.0
-margin_right = -220.0
-margin_bottom = 51.0
+margin_right = -160.0
+margin_bottom = 54.0
 custom_fonts/font = SubResource( 1 )
-text = "按 V 暂时隐身"
+text = "按 V 隐身"
+lines_skipped = 1

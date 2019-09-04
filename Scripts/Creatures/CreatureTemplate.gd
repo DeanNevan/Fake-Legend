@@ -105,6 +105,7 @@ func _ready():
 	#print(invincible_time)
 
 func _physics_process(delta):
+	_update_alive_state()
 	if self.body_capability["can_use_ability"]:
 		abilities.launch_abilities()
 	
@@ -132,27 +133,16 @@ func _physics_process(delta):
 	_take_damage_inspector()
 	_update_body_capability()
 	_update_body_attributes()
-	
-	if self.body_capability["invincible"]:
-		_flash()
-	elif flash_count % 2 != 0:
-		_flash()
-	else:
-		flash_count = 0
-	_update_alive_state()
 
-func _flash():
-	if _should_update_flash:
+func _flash(flash_time):
+	var flash_count = 5
+	var delta_time = flash_time / flash_count
+	for i in flash_count * 2:
 		if self.is_ani:
 			ani.visible = !ani.visible
 		else:
 			spr.visible = !spr.visible
-		_should_update_flash = false
-		yield(get_tree().create_timer(0.03), "timeout")
-		flash_count += 1
-		_should_update_flash = true
-	else:
-		return
+		yield(get_tree().create_timer(delta_time / 2), "timeout")
 
 func rotate_weapon(speed, target_direction, delta):
 	if !weapon.is_controllable:
@@ -168,19 +158,20 @@ func rotate_weapon(speed, target_direction, delta):
 
 func get_damage(damage, is_hit, attacker_position):
 	#print("time is",invincible_time)
+	if alive == false:	# 如果没有存活，则退出函数
+		return
 	if body_capability["invincible"] == true:
 		return
 	
 	if is_hit:#如果是一次受击
 		var judge_result = judge_whether_effective_damage(attacker_position)
+		_flash(invincible_time)
 		#print(judge_result)
 		if judge_result:
 			return
 		body_capability["invincible"] = true
 		InvincibleTimer.start()
 	#print("old life is",life)
-	if alive == false:	# 如果没有存活，则退出函数
-		return
 	#print(collision_point_linear_speed)
 	#print(self.linear_speed)
 	life -= damage# 减少生命值
@@ -190,8 +181,11 @@ func get_damage(damage, is_hit, attacker_position):
 func _update_alive_state():#检测是否存活
 	if life <= 0:
 		life = 0
-		queue_free()						# 自我销毁
-		alive = false
+		_die()
+
+func _die():
+	alive = false
+	queue_free()						# 自我销毁
 
 func lose_capability_moveable(time):
 	timer_capability_moveable.wait_time = timer_capability_moveable.time_left + time
@@ -374,7 +368,7 @@ func _creature_init():
 	add_child(raycast)
 	raycast.set_collision_mask_bit(0,false)
 	#无敌状态相关#
-	invincible_time = 0.2
+	invincible_time = 0.3
 	InvincibleTimer = Timer.new()
 	self.add_child(InvincibleTimer)
 	InvincibleTimer.one_shot = true
