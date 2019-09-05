@@ -106,8 +106,8 @@ func _ready():
 
 func _physics_process(delta):
 	_update_alive_state()
-	if self.body_capability["can_use_ability"]:
-		abilities.launch_abilities()
+	#if self.body_capability["can_use_ability"]:
+		#abilities.launch_abilities()
 	
 	if self.linear_velocity.length() >= max_speed and body_capability["moveable"]:
 		if self.is_ani:
@@ -161,6 +161,7 @@ func get_damage(damage, is_hit, attacker_position):
 	if alive == false:	# 如果没有存活，则退出函数
 		return
 	if body_capability["invincible"] == true:
+		print("invincible!!")
 		return
 	
 	if is_hit:#如果是一次受击
@@ -171,6 +172,7 @@ func get_damage(damage, is_hit, attacker_position):
 			return
 		body_capability["invincible"] = true
 		InvincibleTimer.start()
+	print(damage)
 	#print("old life is",life)
 	#print(collision_point_linear_speed)
 	#print(self.linear_speed)

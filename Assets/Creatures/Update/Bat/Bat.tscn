@@ -8,7 +8,9 @@
 [ext_resource path="res://Assets/Creatures/Update/Bat/Attributes.gd" type="Script" id=6]
 [ext_resource path="res://Assets/Other/LifeBar.tscn" type="PackedScene" id=7]
 [ext_resource path="res://Assets/Abilities/Abilities.tscn" type="PackedScene" id=8]
-[ext_resource path="res://Assets/Abilities/Strike/Strike.tscn" type="PackedScene" id=9]
+[ext_resource path="res://Assets/Abilities/Strike/BasicStrike.tscn" type="PackedScene" id=9]
+
+
 
 [sub_resource type="SpriteFrames" id=1]
 animations = [ {

@@ -69,6 +69,9 @@ func _time_inspector():
 func judge_whether_launch():
 	life_when_start_ability = myself.life
 	
+	if !myself.body_capability["can_use_ability"]:
+		return false
+	
 	if need_self:
 		if myself.has_weapon:
 			if myself.weapon.is_controlling_master_with_ability:

@@ -31,6 +31,7 @@ func _ready():
 func _physics_process(delta):
 	judge_whether_approached_target_position()
 	_update()
+	launch()
 
 func judge_whether_approached_target_position():
 	if self.is_launching:

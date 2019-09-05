@@ -8,7 +8,7 @@ func _ready():
 	weight = 11
 	level = 4
 	value = 100
-	strength = 800
+	strength = 600
 	update_basic_damage()
 	pull_string_array = [3, 5, 7, 9, 11]
 

@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/iron_arrow_1.png-280cd658959dcc9a72237771a19ea522.stex"
+path="res://.import/iron_arrow_1.png-d3bbaa631292a81ff8e78c2aae1b8d0f.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/Art/Projectiles/Arrow/iron_arrow_1.png"
-dest_files=[ "res://.import/iron_arrow_1.png-280cd658959dcc9a72237771a19ea522.stex" ]
+source_file="res://Assets/Art/Projectiles/Arrow/IronArrow/iron_arrow_1.png"
+dest_files=[ "res://.import/iron_arrow_1.png-d3bbaa631292a81ff8e78c2aae1b8d0f.stex" ]
 
 [params]
 

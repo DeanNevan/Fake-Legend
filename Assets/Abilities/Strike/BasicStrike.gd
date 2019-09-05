@@ -22,6 +22,7 @@ func _ready():
 
 func _physics_process(delta):
 	_update()
+	launch()
 
 func _update():
 	if is_launching:
