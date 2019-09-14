@@ -20,6 +20,22 @@ func _ready():
 	#print("total weight is", total_weight)
 
 func _physics_process(delta):
+	if !init_ok:
+		return
+	if has_weapon:
+		if !weapon.init_ok:
+			return
+	if Input.is_action_just_pressed("control_mouse_middle_click") and weapon.type == "ranged":
+		weapon.init_ok = false
+		weapon.free()
+		weaponScene = load("res://Assets/Weapons/Update/Melee/HeavySword/HeavySword.tscn")
+		_player_weapon_init()
+	elif Input.is_action_just_pressed("control_mouse_middle_click") and weapon.type == "melee":
+		weapon.init_ok = false
+		weapon.free()
+		weaponScene = load("res://Assets/Weapons/Update/Ranged/ElfinWing/ElfinWing.tscn")
+		_player_weapon_init()
+	
 	if Input.is_key_pressed(KEY_V) and !is_key_v_pressed:
 		is_key_v_pressed = true
 		if is_ani:
@@ -36,7 +52,7 @@ func _physics_process(delta):
 	if Input.is_action_just_pressed("control_mouse_middle_click"):
 		self.strength = self.strength + 1
 		print("plus strength!",strength)
-	if body_capability["moveable"] == true and !self.is_controlling_self_with_ability: 
+	if body_capability["moveable"] == true and !self.is_controlling_self_with_ability and !is_launching_skill: 
 		_smooth_control_move()
 	if Input.is_key_pressed(KEY_SHIFT):
 		dodge(control_direction.normalized())
@@ -44,7 +60,7 @@ func _physics_process(delta):
 		#weapon.position = weapon.position
 	#print(wave_weapon_vector)
 	#print(wave_weapon_speed)
-	if has_weapon and !self.is_controlling_weapon_with_ability and body_capability["can_control_weapon"] and weapon.is_controllable:#拥有melee武器，武器并未被能力控制移动和旋转，自己可以控制武器，武器可以控制
+	if has_weapon and !self.is_controlling_weapon_with_ability and body_capability["can_control_weapon"] and weapon.is_controllable and !weapon.is_launching_skill:#拥有melee武器，武器并未被能力控制移动和旋转，自己可以控制武器，武器可以控制
 		if Input.is_action_pressed("control_mouse_left_click"):
 			weapon.is_controlling = true
 		else:
@@ -170,6 +186,7 @@ func _player_init():
 	DodgeCooldownTimer.one_shot = true
 	DodgeCooldownTimer.wait_time = 1.5
 	DodgeCooldownTimer.connect("timeout", self, "_on_DodgeCooldownTimer_timeout")
+	init_ok = true
 
 func _player_weapon_init():
 	if weaponScene != null:
@@ -184,6 +201,7 @@ func _player_weapon_init():
 		total_weight = self.weight + weapon.weight#人物与武器总重
 		if weapon.type == "melee":
 			self.attack_distance = self.arm_length + weapon.length + clamp(self.strength / 5.0, 0, 20)
+		weapon.init_ok = true
 	else:
 		has_weapon = false
 		total_weight = self.weight

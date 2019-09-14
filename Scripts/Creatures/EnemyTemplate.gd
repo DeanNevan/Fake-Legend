@@ -45,6 +45,11 @@ func _ready():
 	#print(invincible_time)
 
 func _physics_process(delta):
+	if !init_ok:
+		return
+	if has_weapon:
+		if !weapon.init_ok:
+			return
 	update()
 	
 	judge_towards(self.global_position + self.linear_velocity)
@@ -238,6 +243,7 @@ func _enemy_init():
 	sight_line.set_collision_mask_bit(6,true)#检测墙体
 	sight_line.enabled = false
 	sight_line.force_raycast_update()
+	init_ok = true
 
 func _enemy_weapon_init():
 	if weaponScene != null:
@@ -251,7 +257,7 @@ func _enemy_weapon_init():
 		total_weight = self.weight + weapon.weight#人物与武器总重
 		if weapon.type == "melee":
 			self.attack_distance = self.arm_length + weapon.length + clamp(self.strength / 5.0, 0, 20)
-		
+		weapon.init_ok = true
 	else:
 		has_weapon = false
 		total_weight = self.weight

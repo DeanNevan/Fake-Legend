@@ -21,7 +21,7 @@ var life#生命
 var total_weight = 0#总重
 var attack_distance#攻击距离（武器长度加臂展）
 var alive = true# 是否存活
-var max_bear_damage
+var max_bear_damage = 0
 
 #用于AnimatedSprite相关
 var is_ani := false
@@ -29,6 +29,7 @@ var ani#AnimatedSprite
 var spr#Sprite
 var towards := "none"
 
+var init_ok := false
 var velocity = Vector2()
 var last_damage = 0
 
@@ -41,6 +42,7 @@ var last_time = 0
 var take_damage_in_one_second = 0
 var life_one_second_ago = 0 
 
+var is_launching_skill = false
 
 var pos1 = Vector2()
 var pos2 = Vector2()
@@ -105,9 +107,20 @@ func _ready():
 	#print(invincible_time)
 
 func _physics_process(delta):
+	if !init_ok:
+		return
+	if has_weapon:
+		if !weapon.init_ok:
+			return
 	_update_alive_state()
-	#if self.body_capability["can_use_ability"]:
-		#abilities.launch_abilities()
+	
+	if has_node("Skills"):
+		for i in $SKills.get_child_count():
+			if get_child(i).is_launching == true:
+				is_launching_skill = true
+				break
+			else:
+				is_launching_skill = false
 	
 	if self.linear_velocity.length() >= max_speed and body_capability["moveable"]:
 		if self.is_ani:
@@ -128,7 +141,7 @@ func _physics_process(delta):
 	pos2 = self.global_position
 	self.linear_speed = pos2 - pos1
 	pos1 = pos2
-	update_LifeBar()
+	update_bar()
 	_update_max_bear_damage()
 	_take_damage_inspector()
 	_update_body_capability()
@@ -201,7 +214,7 @@ func lose_capability_ability(time):
 	timer_capability_ability.wait_time = timer_capability_ability.time_left + time
 	timer_capability_ability.start()
 
-func update_LifeBar():
+func update_bar():
 	if $LifeBar.value != self.life:
 		$LifeBar.value = life
 
@@ -354,7 +367,7 @@ func _creature_init():
 	life = max_life
 	$LifeBar.max_value = self.max_life
 	$LifeBar.value = self.life
-	update_LifeBar()
+	update_bar()
 	if self.has_node("AnimatedSprite"):
 		$AnimatedSprite.animation = "idle"
 		is_ani = true

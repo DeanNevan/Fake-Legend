@@ -24,7 +24,7 @@ onready var timer = Timer.new()
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	myself = get_parent().get_parent()
-	max_bear_damage = myself.max_life / 4.0
+	max_bear_damage = myself.max_bear_damage
 	is_launching = false
 	add_child(timer)
 	timer.one_shot = true

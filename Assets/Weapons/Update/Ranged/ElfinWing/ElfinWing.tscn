@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=2]
+[gd_scene load_steps=15 format=2]
 
 [ext_resource path="res://Assets/Weapons/Update/Ranged/ElfinWing/ElfinWing.gd" type="Script" id=1]
 [ext_resource path="res://Assets/Art/Weapons/Update/Ranged/ElfinWing/elfin_wing_idle_1.png" type="Texture" id=2]
@@ -9,6 +9,8 @@
 [ext_resource path="res://Assets/Art/Weapons/Update/Ranged/ElfinWing/elfin_wing_shoot_3.png" type="Texture" id=7]
 [ext_resource path="res://Assets/Art/Weapons/Update/Ranged/ElfinWing/elfin_wing_shoot_4.png" type="Texture" id=8]
 [ext_resource path="res://Assets/Art/Weapons/Update/Ranged/ElfinWing/elfin_wing_shoot_5.png" type="Texture" id=9]
+[ext_resource path="res://Assets/Skills/Skills.tscn" type="PackedScene" id=10]
+[ext_resource path="res://Assets/Skills/PierceWind/PierceWind.tscn" type="PackedScene" id=11]
 
 [sub_resource type="SpriteFrames" id=1]
 animations = [ {
@@ -53,3 +55,7 @@ shape = SubResource( 2 )
 [node name="Margin" type="Path2D" parent="."]
 position = Vector2( 0, -2 )
 curve = SubResource( 3 )
+
+[node name="Skills" parent="." instance=ExtResource( 10 )]
+
+[node name="PierceWind" parent="Skills" instance=ExtResource( 11 )]

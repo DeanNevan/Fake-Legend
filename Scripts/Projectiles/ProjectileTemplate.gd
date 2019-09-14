@@ -1,5 +1,7 @@
 extends RigidBody2D
 ##
+signal free
+
 var tag = "projectile"
 var type = "projectile"
 
@@ -13,7 +15,7 @@ var pos1 = Vector2()
 var pos2 = Vector2()
 var linear_speed : Vector2 = pos2 - pos1
 
-var initial_velocity
+var initial_velocity = Vector2(1, 1)
 
 var life_time = 2#可以飞行的时间
 
@@ -32,11 +34,12 @@ func _ready():
 	ani = $AnimatedSprite
 
 func _process(delta):
+	
 	if is_freeing:
 		return
 	
 	if is_flying:
-		print(linear_velocity)
+		#print(linear_velocity)
 		ani.speed_scale = self.linear_velocity.length() / initial_velocity.length()
 	
 	pos2 = self.global_position
@@ -69,6 +72,7 @@ func _on_body_entered(body):
 			_free()
 
 func _free():
+	emit_signal("tree_exiting")
 	is_freeing = true
 	self.queue_free()
 

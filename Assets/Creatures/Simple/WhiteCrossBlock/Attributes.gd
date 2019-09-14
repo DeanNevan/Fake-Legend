@@ -3,7 +3,7 @@ extends "res://Scripts/Creatures/AttributesTemplate.gd"
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	max_speed = 60
-	strength = 20
+	strength = 30
 	max_life = 120
 	max_stamina = 80
 	arm_length = 20

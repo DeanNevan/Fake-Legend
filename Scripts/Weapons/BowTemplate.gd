@@ -28,18 +28,23 @@ var is_updating_animation = false
 var is_pulling = false
 var is_releasing = false
  
-export (PackedScene) var arrow
+export (PackedScene) var arrow = load("res://Assets/Projectiles/Arrow/IronArrow/IronArrow.tscn").instance()
+var arrow_res
 # Called when the node enters the scene tree for the first time.
 func _ready():
+	arrow_res = "res://Assets/Projectiles/Arrow/IronArrow/IronArrow.tscn"
 	bow_init()
+	arrow_init()
 	update_basic_damage()
+	emit_signal("init")
 
 func _process(delta):
+	#print(arrow)
 	#print(timer_pull_string.time_left)
 	self.global_position = weapon_master.global_position
 	_update_string_offset()
 	if weapon_master.tag == "player":
-		if !is_controlling_self_with_ability and !weapon_master.is_controlling_weapon_with_ability:
+		if !is_controlling_self_with_ability and !weapon_master.is_controlling_weapon_with_ability and !is_launching_skill:
 			_player_control_shoot()
 
 func _update_string_offset():
@@ -52,21 +57,21 @@ func _update_string_offset():
 
 func _player_control_shoot():
 	if is_controlling:
-		_start()
+		start()
 		if is_automatic and is_pulling:
 			if timer_pull_string.time_left == 0:
-				_release()
+				release()
 				var velocity =  Vector2(cos(self.global_rotation), sin(self.global_rotation)) * 1 * strength
 				arrow.start_fly(velocity)
 	elif is_pulling:
-		_release()
+		release()
 		if timer_pull_string.time_left <= time_ready_to_max_shoot / 2:
 			var velocity =  Vector2(cos(self.global_rotation), sin(self.global_rotation)) * ((time_ready_to_max_shoot - timer_pull_string.time_left) / time_ready_to_max_shoot) * strength
 			arrow.start_fly(velocity)
 		else:
 			arrow._free()
 
-func _start():
+func start(add_arrow = true):
 	if !is_pulling and can_shoot:
 		timer_pull_string.paused = false
 		timer_pull_string.start(time_ready_to_max_shoot)
@@ -76,18 +81,20 @@ func _start():
 		is_releasing = false
 		is_pulling = true
 		can_shoot = false
-		arrow_init()
-		arrow.visible = false
-		get_node("/root/Main").add_child(arrow)
-		arrow.generate_frame = get_tree().get_frame()
-		arrow.is_being_pulled = true
-		arrow.weapon = self
+		
+		if add_arrow:
+			arrow = load("res://Assets/Projectiles/Arrow/IronArrow/IronArrow.tscn").instance()
+			arrow.visible = false
+			get_node("/root/Main").add_child(arrow)
+			arrow.generate_frame = get_tree().get_frame()
+			arrow.is_being_pulled = true
+			arrow.weapon = self
 		
 		yield(get_tree().create_timer(time_ready_to_max_shoot + time_of_every_shoot_frame), "timeout")
 		if is_pulling:
 			emit_signal("fully_pull")
 
-func _release():
+func release():
 	if is_pulling and !is_releasing:
 		timer_pull_string.paused = true
 		timer_pull_string.wait_time = time_ready_to_max_shoot
@@ -108,18 +115,21 @@ func _idle():
 	ani.animation = "idle"
 
 func ai_shoot():
-	_start()
+	start()
 	yield(timer_pull_string, "timeout")
-	_release()
+	release()
 	var velocity =  Vector2(cos(self.global_rotation), sin(self.global_rotation)) * 1 * strength
 	arrow.start_fly(velocity)
 	yield(get_tree().create_timer(time_to_fully_release), "timeout")
 	_idle()
 
 func arrow_init():
-	arrow = load("res://Assets/Projectiles/Arrow/IronArrow/IronArrow.tscn").instance()
+	#arrow = load("res://Assets/Projectiles/Arrow/IronArrow/IronArrow.tscn").instance()
+	pass
 
 func bow_init():
+	ranged_weapon_type = "bow"
+	type = "ranged"
 	#max_range_distance = weapon_master.strength * 3 + clamp((5 - arrow.weight) * 20, 5, 80)
 	
 	self.connect("fully_release", self, "_idle")
@@ -140,6 +150,8 @@ func bow_init():
 	timer_pull_string.wait_time = time_ready_to_max_shoot
 	timer_pull_string.paused = true
 	add_child(timer_pull_string)
+	
+	emit_signal("init")
 
 func _update_animation():
 	pass

@@ -14,6 +14,11 @@ func _ready():
 func update_abilities_arr():
 	abilities_count = get_child_count()
 
+func break_abilities():
+	if abilities_count != 0:
+		for i in abilities_count:
+			get_child(i).break_ability()
+
 func launch_abilities():
 	launching_abilities_count = 0
 	if abilities_count != 0:

@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=2]
+[gd_scene load_steps=12 format=2]
 
 [ext_resource path="res://Main.gd" type="Script" id=1]
 [ext_resource path="res://Assets/Creatures/Update/Violet/Violet.tscn" type="PackedScene" id=2]
@@ -7,10 +7,12 @@
 [ext_resource path="res://Assets/Rooms/Update/TestRoom/TestRoom1/TestRoom1.tscn" type="PackedScene" id=5]
 [ext_resource path="res://Assets/Creatures/Update/Bat/Bat.tscn" type="PackedScene" id=6]
 [ext_resource path="res://Scripts/Creatures/EnemyTemplate.gd" type="Script" id=7]
-[ext_resource path="res://Fonts/汉仪洛天依体简.ttf" type="DynamicFontData" id=8]
+[ext_resource path="res://Assets/Creatures/Simple/WhiteCrossBlock/WhiteCrossBlock.tscn" type="PackedScene" id=8]
+[ext_resource path="res://Assets/Weapons/Update/Melee/HeavySword/HeavySword.tscn" type="PackedScene" id=9]
+[ext_resource path="res://Fonts/汉仪洛天依体简.ttf" type="DynamicFontData" id=10]
 
 [sub_resource type="DynamicFont" id=1]
-font_data = ExtResource( 8 )
+font_data = ExtResource( 10 )
 
 [node name="Main" type="Node2D"]
 script = ExtResource( 1 )
@@ -74,6 +76,11 @@ script = ExtResource( 7 )
 [node name="Bat22" parent="Room/TestRoom1/Enemy" instance=ExtResource( 6 )]
 position = Vector2( 20, 270 )
 script = ExtResource( 7 )
+
+[node name="WhiteCrossBlock" parent="Room/TestRoom1/Enemy" instance=ExtResource( 8 )]
+position = Vector2( 220, 131.7 )
+script = ExtResource( 7 )
+weaponScene = ExtResource( 9 )
 
 [node name="Label" type="Label" parent="."]
 margin_left = -260.0

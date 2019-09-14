@@ -1,11 +1,14 @@
 extends RigidBody2D
 
 signal hit_sth
+signal init
 
 #一些武器基本属性
 var level = 0
 var value = 0
 
+var init_ok := false
+var is_launching_skill = false
 
 var tag : String = "weapon"#player_weapon or enemy_weapon or weapon
 var type : String#melee or ranged or magic
@@ -32,6 +35,15 @@ func _ready():
 	weapon_init()
 
 func _process(delta):
+	if !init_ok:
+		return
+	if has_node("Skills"):
+		for i in $Skills.get_child_count():
+			if $Skills.get_child(i).is_launching == true:
+				is_launching_skill = true
+				break
+			else:
+				is_launching_skill = false
 	#print(self.angular_velocity)
 	#print(self.linear_speed)
 	rot2 = self.global_rotation
@@ -171,3 +183,4 @@ func weapon_init():
 	
 	self.linear_damp = 0.3 if weapon_master == null else weapon_master.linear_damp
 	self.angular_damp = 0.3
+	

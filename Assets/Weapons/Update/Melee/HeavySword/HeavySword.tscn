@@ -15,13 +15,14 @@ func _ready():
 	value = 25
 	length = 74
 	set_tag_and_type(\"weapon\",\"melee\")
+	update_basic_damage()
 
 func _on_SharpArea_body_entered(body, weapon_hit_type):
-	_on_Weapon_body_entered(body,self.linear_speed,self.damage,weapon_hit_type)
+	_on_Weapon_body_entered(body,self.linear_speed,self.basic_damage,weapon_hit_type)
 
 
 func _on_ObtuseArea_body_entered(body, weapon_hit_type):
-	_on_Weapon_body_entered(body,self.linear_speed,self.damage,weapon_hit_type)"
+	_on_Weapon_body_entered(body,self.linear_speed,self.basic_damage,weapon_hit_type)"
 
 [sub_resource type="ConvexPolygonShape2D" id=2]
 points = PoolVector2Array( 9, -3.5, 43, -3.5, 46, 0, 43, 3.5, 9, 3.5 )

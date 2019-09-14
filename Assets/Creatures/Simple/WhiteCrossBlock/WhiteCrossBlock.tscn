@@ -7,9 +7,6 @@
 [ext_resource path="res://Assets/Abilities/Slash/BasicSlash.tscn" type="PackedScene" id=5]
 [ext_resource path="res://Assets/Creatures/Simple/WhiteCrossBlock/Attributes.gd" type="Script" id=6]
 
-
-
-
 [sub_resource type="PhysicsMaterial" id=1]
 friction = 0.0
 rough = true
@@ -17,7 +14,7 @@ rough = true
 [sub_resource type="RectangleShape2D" id=2]
 extents = Vector2( 5, 5 )
 
-[sub_resource type="Curve2D" id=4]
+[sub_resource type="Curve2D" id=3]
 bake_interval = 1.0
 _data = {
 "points": PoolVector2Array( 0, 0, 0, 0, -16.3731, -16.5361, 0, 0, 0, 0, 16.3285, -16.5361, 0, 0, 0, 0, 16.1746, 16.1655, 0, 0, 0, 0, -16.2192, 16.2425, 0, 0, 0, 0, -16.3731, -16.4591 )
@@ -50,7 +47,7 @@ shape = SubResource( 2 )
 [node name="Margin" type="Path2D" parent="CollisionShape2D"]
 rotation = -0.785398
 scale = Vector2( 0.5, 0.5 )
-curve = SubResource( 4 )
+curve = SubResource( 3 )
 
 [node name="Abilities" parent="." instance=ExtResource( 3 )]
 
