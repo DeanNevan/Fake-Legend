@@ -10,6 +10,8 @@ var arrow_res : String
 var is_releasing := false
 var delay_one_frame = false
 
+
+
 func _ready():
 	
 	cd_time = 5
@@ -49,6 +51,7 @@ func _start():
 	update_myself_points()
 	special_arrow = load(myself.arrow_res).instance()
 	special_arrow.weapon = myself
+	special_arrow.can_pierce = true
 	special_arrow.linear_damp = 0
 	special_arrow.angular_damp = 0
 	special_arrow.connect("tree_exiting", self, "_stop")
@@ -63,7 +66,7 @@ func _start():
 	_release()
 
 func _release():
-	special_arrow.start_fly(target_vector.normalized() * myself.strength * 2)
+	special_arrow.start_fly(target_vector.normalized() * myself.strength * 3)
 
 func _skill_init():
 	init_ok = false

@@ -29,6 +29,9 @@ var ani
 var weapon
 var timer_flying#飞行时间计时器
 
+var use_timer := true
+var can_pierce := false
+
 func _ready():
 	_projectile_init()
 	ani = $AnimatedSprite
@@ -61,14 +64,14 @@ func _process(delta):
 		_free()
 
 func _on_body_entered(body):
-	if !is_entered:
-		is_entered = true
-		if body.tag == "TileMap":
-			self.linear_velocity *= 0.5
-		if body.tag != weapon.weapon_master.tag and body.has_method("get_damage"):
-			var damage = ((self.linear_speed - body.linear_speed).length() / 2.5) * (basic_damage + weapon.basic_damage)
-			body.get_damage(((self.linear_speed - body.linear_speed).length() / 2.5) * (basic_damage + weapon.basic_damage), true, body.global_position)
-			print("shoot target!!!", damage)
+	print("23333")
+	if body.tag == "TileMap":
+		self.linear_velocity *= 0.5
+	if body.tag != weapon.weapon_master.tag and body.has_method("get_damage"):
+		var damage = ((self.linear_speed - body.linear_speed).length() / 2.5) * (basic_damage + weapon.basic_damage)
+		body.get_damage(((self.linear_speed - body.linear_speed).length() / 2.5) * (basic_damage + weapon.basic_damage), true, body.global_position)
+		print("shoot target!!!", damage)
+		if !can_pierce:
 			_free()
 
 func _free():
@@ -83,8 +86,9 @@ func start_fly(velocity):
 	initial_velocity = velocity
 	ani.play("flying")
 	self.linear_velocity = velocity
-	timer_flying.paused = false
-	timer_flying.start(life_time)
+	if use_timer:
+		timer_flying.paused = false
+		timer_flying.start(life_time)
 	is_being_pulled = false
 	should_update_pull_string = true
 	is_flying = true

@@ -82,6 +82,21 @@ position = Vector2( 220, 131.7 )
 script = ExtResource( 7 )
 weaponScene = ExtResource( 9 )
 
+[node name="WhiteCrossBlock2" parent="Room/TestRoom1/Enemy" instance=ExtResource( 8 )]
+position = Vector2( 190, 90 )
+script = ExtResource( 7 )
+weaponScene = ExtResource( 9 )
+
+[node name="WhiteCrossBlock3" parent="Room/TestRoom1/Enemy" instance=ExtResource( 8 )]
+position = Vector2( 247.5, 97.5 )
+script = ExtResource( 7 )
+weaponScene = ExtResource( 9 )
+
+[node name="WhiteCrossBlock4" parent="Room/TestRoom1/Enemy" instance=ExtResource( 8 )]
+position = Vector2( 220, 70 )
+script = ExtResource( 7 )
+weaponScene = ExtResource( 9 )
+
 [node name="Label" type="Label" parent="."]
 margin_left = -260.0
 margin_top = 32.0

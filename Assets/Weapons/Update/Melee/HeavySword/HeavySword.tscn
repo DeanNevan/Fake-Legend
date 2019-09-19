@@ -13,7 +13,7 @@ script/source = "extends \"res://Scripts/Weapons/MeleeWeaponTemplate.gd\"
 func _ready():
 	level = 3
 	value = 25
-	length = 74
+	length = 55
 	set_tag_and_type(\"weapon\",\"melee\")
 	update_basic_damage()
 
